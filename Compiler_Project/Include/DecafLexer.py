@@ -70,7 +70,7 @@ t_ignore_COMMENT = r'//.*'
 t_ignore = ' \t'
 
 def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z_0-9]*|0(x|X)[0-9a-fA-F]+'
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
     if not (t.value == 'true' or t.value == 'false'):
         t.type = reserved.get(t.value, 'T_ID')
         return t
@@ -81,7 +81,6 @@ def t_ID(t):
 
 def t_DOUBLELITERAL(t):
     r'\d+\.(\d+)?((e|E)(\+|-)?\d+)?|\d+(e|E)(\+|-)?\d+'
-    t.value = t.value
     t.type = reserved.get(t.value, 'T_DOUBLELITERAL')
     return t
 
@@ -96,16 +95,14 @@ def t_ignore_COMMENT_MULTI(t):
     pass
 
 def t_INTLITERAL(t):
-    r'\d+'
-    #t.value = int(t.value)
+    r'0[x|X][0-9a-fA-F]+|\d+'
     t.type = reserved.get(t.value, 'T_INTLITERAL')
     return t
 
 def t_STRINGLITERAL(t):
     r'"([^\\"]|\\\\|\\"|\\n|\\t)*"'
-    t.value = t.value[1:-1]
     t.type = reserved.get(t.value, 'T_STRINGLITERAL')
-    t.lexer.lineno += t.value.count('\n')  # since newlines may be embedded in strings
+    t.lexer.lineno += t.value.count('\n')
     return t
 
 def t_error(t):
@@ -126,6 +123,6 @@ if __name__ == '__main__':
     lexer.input(file.read())
     for token in get_token(lexer):
         if token.type[:2] == 'T_':
-            print("%s %r" % (token.type, token.value))
+            print("%s %s" % (token.type, token.value))
         else:
             print(token.value)
