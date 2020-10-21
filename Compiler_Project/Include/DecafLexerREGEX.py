@@ -33,38 +33,39 @@ reserved = [
     ('protected', 'PROTECTED'),
     ('public', 'PUBLIC')
 ]
-rules = [
-    ('\.', 'DOT'),
-    (',', 'COMMA'),
-    (';', 'SEMICOLON'),
-    ('\(', 'LPAREN'),
-    ('\)', 'RPAREN'),
-    ('{', 'LBRACE'),
-    ('}', 'RBRACE'),
-    ('\[', 'LBRACKET'),
-    ('\]', 'RBRACKET'),
-    ('==', 'EQ'),
-    ('!=', 'NEQ'),
-    ('=', 'ASSIGN'),
-    ('!', 'NOT'),
-    ('\+', 'PLUS'),
-    ('-', 'MINUS'),
-    ('\*', 'MULTIPLY'),
-    ('/', 'DIVIDE'),
-    ('%', 'MODE'),
-    ('&&', 'AND'),
-    ('\|\|', 'OR'),
-    ('>=', 'GEQ'),
-    ('<=', 'LEQ'),
-    ('<', 'LT'),
-    ('>', 'GT'),
-    ('[a-zA-Z_][a-zA-Z_0-9]*', 'T_ID'),
-    ('\d+\.(\d+)?((e|E)(\+|-)?\d+)?|\d+(e|E)(\+|-)?\d+', 'T_DOUBLELITERAL'),
-    ('0[x|X][0-9a-fA-F]+|\d+', 'T_INTLITERAL'),
-    ('\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\"', 'T_STRINGLITERAL'),
-    ('true|false', 'T_BOOLEANLITERAL'),
+tokens = [
+             ('\s', 'WHITESPACE'),
+             ('\.', 'DOT'),
+             (',', 'COMMA'),
+             (';', 'SEMICOLON'),
+             ('\(', 'LPAREN'),
+             ('\)', 'RPAREN'),
+             ('{', 'LBRACE'),
+             ('}', 'RBRACE'),
+             ('\[', 'LBRACKET'),
+             ('\]', 'RBRACKET'),
+             ('==', 'EQ'),
+             ('!=', 'NEQ'),
+             ('=', 'ASSIGN'),
+             ('!', 'NOT'),
+             ('\+', 'PLUS'),
+             ('-', 'MINUS'),
+             ('\*', 'MULTIPLY'),
+             ('/', 'DIVIDE'),
+             ('%', 'MODE'),
+             ('&&', 'AND'),
+             ('\|\|', 'OR'),
+             ('>=', 'GEQ'),
+             ('<=', 'LEQ'),
+             ('<', 'LT'),
+             ('>', 'GT'),
+             ('[a-zA-Z_][a-zA-Z_0-9]*', 'T_ID'),
+             ('\d+\.(\d+)?((e|E)(\+|-)?\d+)?|\d+(e|E)(\+|-)?\d+', 'T_DOUBLELITERAL'),
+             ('0[x|X][0-9a-fA-F]+|\d+', 'T_INTLITERAL'),
+             ('\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\"', 'T_STRINGLITERAL'),
+             ('true|false', 'T_BOOLEANLITERAL'),
+         ] + reserved
 
-] + reserved
 
 class Token(object):
     def __init__(self, type, value, pos):
@@ -78,25 +79,25 @@ class Token(object):
         else:
             return '%s' % (self.value)
 
+
 class LexerError(Exception):
     def __init__(self, pos):
         self.pos = pos
 
+
 class Lexer(object):
-    def __init__(self, rules, skip_whitespace=True):
-        idx = 1
-        regex_parts = []
-        self.group_type = {}
+    def __init__(self, tokens):
+        pattern_index = 1
+        regex_patterns = []
+        self.pattern_type = {}
 
-        for regex, type in rules:
-            groupname = 'GROUP%s' % idx
-            regex_parts.append('(?P<%s>%s)' % (groupname, regex))
-            self.group_type[groupname] = type
-            idx += 1
+        for regex, type in tokens:
+            pattern_number = 'Pattern' + str(pattern_index)
+            regex_patterns.append('(?P<%s>%s)' % (pattern_number, regex))
+            self.pattern_type[pattern_number] = type
+            pattern_index += 1
 
-        self.regex = re.compile('|'.join(regex_parts))
-        self.skip_whitespace = skip_whitespace
-        self.re_whitespace_skip = re.compile('\S')
+        self.regex = re.compile('|'.join(regex_patterns))
 
     def input(self, buffer):
         oneLineComment_removed = re.sub('//.*', '', buffer)
@@ -108,25 +109,18 @@ class Lexer(object):
         if self.pos >= len(self.buffer):
             return None
         else:
-            if self.skip_whitespace:
-                t = self.re_whitespace_skip.search(self.buffer, self.pos)
-                if t:
-                    self.pos = t.start()
+            tok = self.regex.match(self.buffer, self.pos)
+            if tok:
+                groupname = tok.lastgroup
+                token_type = self.pattern_type[groupname]
+                if token_type == 'T_ID' and (tok.group(groupname) == 'true' or tok.group(groupname) == 'false'):
+                    token = Token('T_BOOLEANLITERAL', tok.group(groupname), self.pos)
+                elif token_type == 'T_ID' and ((tok.group(groupname), tok.group(groupname).upper()) in reserved):
+                    token = Token(tok.group(groupname).upper(), tok.group(groupname), self.pos)
                 else:
-                    return None
-            t = self.regex.match(self.buffer, self.pos)
-            if t:
-                groupname = t.lastgroup
-                token_type = self.group_type[groupname]
-                if token_type == 'T_ID' and (t.group(groupname) == 'true' or t.group(groupname) == 'false'):
-                    token = Token('T_BOOLEANLITERAL', t.group(groupname), self.pos)
-                elif token_type == 'T_ID' and ((t.group(groupname),t.group(groupname).upper()) in reserved):
-                    token = Token(t.group(groupname).upper(), t.group(groupname), self.pos)
-                else:
-                    token = Token(token_type, t.group(groupname), self.pos)
-                self.pos = t.end()
+                    token = Token(token_type, tok.group(groupname), self.pos)
+                self.pos = tok.end()
                 return token
-
             raise LexerError(self.pos)
 
     def tokenizer(self):
@@ -134,10 +128,13 @@ class Lexer(object):
             token = self.token()
             if token is None:
                 break
+            if token.type == 'WHITESPACE':
+                continue
             yield token
 
+
 if __name__ == '__main__':
-    myLexer = Lexer(rules, skip_whitespace=True)
+    myLexer = Lexer(tokens)
     file = open("DecafCode.decaf", "r")
     myLexer.input(file.read())
 
