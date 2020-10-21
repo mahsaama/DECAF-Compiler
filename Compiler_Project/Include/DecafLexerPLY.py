@@ -67,7 +67,7 @@ t_SEMICOLON = r';'
 t_ASSIGN = r'='
 t_COMMA = r','
 t_ignore_COMMENT = r'//.*'
-t_ignore = ' \t'
+t_ignore = ' \t\r\f'
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
