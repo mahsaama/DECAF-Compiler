@@ -59,10 +59,10 @@ tokens = [
              ('<=', 'LEQ'),
              ('<', 'LT'),
              ('>', 'GT'),
-             ('[a-zA-Z_][a-zA-Z_0-9]*', 'T_ID'),
-             ('\d+\.(\d+)?((e|E)(\+|-)?\d+)?|\d+(e|E)(\+|-)?\d+', 'T_DOUBLELITERAL'),
+             ('[a-zA-Z][_a-zA-Z0-9]*', 'T_ID'),
+             ('\d+\.(\d*)?((e|E)(\+|-)?\d+)?|\d+(e|E)(\+|-)?\d+', 'T_DOUBLELITERAL'),
              ('0[x|X][0-9a-fA-F]+|\d+', 'T_INTLITERAL'),
-             ('\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\"', 'T_STRINGLITERAL'),
+             ('"[^"\\n]*"', 'T_STRINGLITERAL'),
              ('true|false', 'T_BOOLEANLITERAL'),
          ] + reserved
 

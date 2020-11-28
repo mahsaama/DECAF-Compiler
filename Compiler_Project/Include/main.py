@@ -1,5 +1,8 @@
 import sys, getopt
 from DecafLexerREGEX import *
+from DecafParser import *
+from Include.DecafParser import parserSyntaxError
+
 
 def main(argv):
     inputfile = ''
@@ -19,18 +22,24 @@ def main(argv):
             outputfile = arg
 
     with open("tests/" + inputfile, "r") as input_file:
-        myLexer = Lexer(tokens)  
-        myLexer.input(input_file.read())
-    	
-    with open("out/" + outputfile, "w") as output_file:
-        sys.stdout =  output_file      
-        try:
-                for token in myLexer.tokenizer():
-                    print(token)
-        except LexerError:
-                print('UNDEFINED_TOKEN')
+        # PHASE_1
+        # myLexer = Lexer(tokens)
+        # myLexer.input(input_file.read())
 
-			
+    	# PHASE_2
+        input_code = input_file.read()
+
+    with open("out/" + outputfile, "w") as output_file:
+        # PHASE_1
+        # sys.stdout =  output_file
+        # try:
+        #         for token in myLexer.tokenizer():
+        #             print(token)
+        # except LexerError:
+        #         print('UNDEFINED_TOKEN')
+
+		# PHASE_2
+        output_file.write(parserSyntaxError(input_code))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
