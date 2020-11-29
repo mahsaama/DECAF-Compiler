@@ -46,7 +46,7 @@ Grammar = """
     return_stmt : "return" (expr)? ";"
     break_stmt : "break" ";"
     continue_stmt : "continue" ";"
-    print_stmt : "print" "(" expr (","expr)* ")" ";"
+    print_stmt : "Print" "(" expr (","expr)* ")" ";"
     expr : l_value "=" expr 
         | constant 
         | l_value 
@@ -54,11 +54,11 @@ Grammar = """
         | call 
         | "(" expr ")" 
         | expr "+" expr 
-        | expr "−" expr 
+        | expr "-" expr 
         | expr "*" expr 
         | expr "/" expr 
         | expr "%" expr 
-        | "−" expr 
+        | "-" expr 
         | expr "<" expr 
         | expr "<=" expr 
         | expr ">" expr 
@@ -69,7 +69,7 @@ Grammar = """
         | expr "||" expr 
         | "!" expr 
         | "ReadInteger" "(" ")" 
-        | "readLine" "(" ")" 
+        | "ReadLine" "(" ")" 
         | "new" ident 
         | "NewArray" "(" expr "," type ")" 
         | "itod" "(" expr ")" 
@@ -95,7 +95,7 @@ Grammar = """
     bool_constant : /(true)/ 
         | /(false)/
     string_constant : /"[^"\\n]*"/
-    ident :  /[a-zA-Z][_a-zA-Z0-9]*/
+    ident :  /(?!((true)|(false)|(void)|(int)|(double)|(bool)|(string)|(class)|(interface)|(null)|(this)|(extends)|(implements)|(for)|(while)|(if)|(else)|(return)|(break)|(continue)|(new)|(NewArray)|(Print)|(ReadInteger)|(ReadLine)|(dtoi)|(itod)|(btoi)|(itob)|(private)|(protected)|(public))([^_a-zA-Z0-9]|$))[a-zA-Z][_a-zA-Z0-9]*/
     INLINE_COMMENT : "//" /[^\\n]*/ "\\n"
     MULTILINE_COMMENT : "/*" /.*?/ "*/"
     %ignore INLINE_COMMENT 
