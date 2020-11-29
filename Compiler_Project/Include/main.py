@@ -1,7 +1,6 @@
 import sys, getopt
-from DecafLexerREGEX import *
-from DecafParser import *
-from Include.DecafParser import parserSyntaxError
+from Compiler_Project.Include.DecafLexerREGEX import *
+from Compiler_Project.Include.DecafParser import *
 
 
 def main(argv):
@@ -39,7 +38,7 @@ def main(argv):
         #         print('UNDEFINED_TOKEN')
 
 		# PHASE_2
-        output_file.write(parserSyntaxError(input_code))
+        output_file.write(LALR_parser(input_code))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
