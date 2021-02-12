@@ -41,7 +41,7 @@ def main(argv):
 
 		# PHASE_2
         # output_file.write(LALR_parser(input_code))
-        output_file.write(CodeGenerator(input_code))
+        output_file.write(decafCGEN(input_code))
         # for the sake of testing :
         output_file.write("""
             # PROGRAM: Hello, World!

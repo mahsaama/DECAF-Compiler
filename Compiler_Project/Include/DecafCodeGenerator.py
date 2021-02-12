@@ -11,6 +11,15 @@ def POP():
 
 
 class CodeGenerator(Interpreter):  # TODO : Add access modes
+    current_scope = 'root'
+    stack = []
+    stack_counter = [0]
+    block_stmt_counter = 0
+    string_counter = 0
+    label_counter = 0
+    class_counter = 0
+
+
     def __init__(self):
         pass
 
@@ -203,8 +212,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     def get_type(self, typ):
         pass
 
-
-if __name__ == '__main__':
+def decafCGEN(code):
     parser = Lark(Grammar, parser="lalr")
     parse_tree = parser.parse(code)
     SymbolTable().visit(parse_tree)
@@ -212,4 +220,7 @@ if __name__ == '__main__':
     set_parents()
     Traversal().visit(parse_tree)
     MIPS_code = CodeGenerator().visit(parse_tree)
-    print(MIPS_code)
+    return MIPS_code
+
+if __name__ == '__main__':
+    print(decafCGEN(code))
