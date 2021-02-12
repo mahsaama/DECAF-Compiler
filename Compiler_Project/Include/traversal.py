@@ -2,7 +2,7 @@ import lark
 from lark import Lark, Tree
 from lark.lexer import Token
 from lark.visitors import Interpreter
-from function import class_type_objects , class_table , Class
+from Compiler_Project.Include.function import class_type_objects, class_table, Class
 
 
 class ParentTree(Interpreter):
@@ -21,7 +21,9 @@ class ParentTree(Interpreter):
         else:
             parent_classes.append(ident.value)
 
+
 parent_classes = []
+
 
 def tree_traversal(parent_class: Class):
     if parent_class.children:
@@ -47,10 +49,11 @@ def tree_traversal(parent_class: Class):
             tree_traversal(child_class)
 
 
-def set_patents():
+def set_parents():
     for class_name in parent_classes:
         class_object = class_type_objects[class_table[class_name]]
         tree_traversal(class_object)
+
 
 class Traversal(Interpreter):
     def decl(self, tree):
@@ -169,7 +172,8 @@ class Traversal(Interpreter):
                     exists = True
             if exists:
                 copy = tree.children.copy()
-                this = Tree(data='val', children=[Tree(data='ident_l_value', children=[Token(type_='IDENT', value='this')])])
+                this = Tree(data='val',
+                            children=[Tree(data='ident_l_value', children=[Token(type_='IDENT', value='this')])])
                 tree.children = [this] + copy
                 tree.data = 'method_call'
 

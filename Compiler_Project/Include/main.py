@@ -1,6 +1,8 @@
 import sys, getopt
 from Compiler_Project.Include.DecafLexerREGEX import *
 from Compiler_Project.Include.DecafParser import *
+from Compiler_Project.Include.DecafCodeGenerator import *
+
 
 
 def main(argv):
@@ -39,7 +41,7 @@ def main(argv):
 
 		# PHASE_2
         # output_file.write(LALR_parser(input_code))
-        output_file.write(cgen(input_code))
+        output_file.write(CodeGenerator(input_code))
         # for the sake of testing :
         output_file.write("""
             # PROGRAM: Hello, World!

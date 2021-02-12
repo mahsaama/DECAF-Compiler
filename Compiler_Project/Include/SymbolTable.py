@@ -2,7 +2,8 @@ import lark
 from lark import Lark, Tree
 from lark.lexer import Token
 from lark.visitors import Interpreter
-from function import Type,Class,Function , class_type_objects , function_objects  , function_table , class_table
+from Compiler_Project.Include.function import Type, Class, Function, class_type_objects, function_objects, \
+    function_table, class_table
 
 Grammar = """
     start : (decl)+
@@ -98,7 +99,6 @@ Grammar = """
     %ignore MULTILINE_COMMENT
 """
 
-
 sp = ''
 stack = [sp]
 st_objects = []
@@ -111,9 +111,8 @@ class SymbolTableObject:
         self.name = name
         self.parent_scope = parent_scope
         self.type = Type()
-        
-        st_objects.append(self)
 
+        st_objects.append(self)
 
 
 class SymbolTable(Interpreter):
@@ -137,7 +136,6 @@ class SymbolTable(Interpreter):
                 self.visit(declaration)
                 pass
 
-
     def class_decl(self, tree):
         ident = tree.children[0]
         class_type_object = Class(name=ident)
@@ -159,7 +157,6 @@ class SymbolTable(Interpreter):
                     field._meta = class_type_object
                     self.visit(field)
                 stack.pop()
-
 
     def function_decl(self, tree):
         class_type_object = tree._meta
@@ -252,7 +249,6 @@ class SymbolTable(Interpreter):
         stmt = tree.children[-1]
         self.visit(stmt)
 
-
     def field(self, tree):
         tree.children[0]._meta = tree._meta
         self.visit(tree.children[0])
@@ -287,9 +283,6 @@ class SymbolTable(Interpreter):
             symbol_table_object.type.size += 1
             tree.children[0]._meta = tree._meta
             self.visit(tree.children[0])
-
-
-
 
 
 code = """
