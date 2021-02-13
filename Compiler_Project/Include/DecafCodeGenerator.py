@@ -10,6 +10,10 @@ def POP():
     pass
 
 
+def labelCounter():
+    pass
+
+
 class CodeGenerator(Interpreter):  # TODO : Add access modes
     current_scope = 'root'
     stack = []
@@ -21,10 +25,14 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
 
     def __init__(self):
-        pass
+        super().__init__()
+        self.expressionTypes = []
+        self.stmtLabels = []
+        self.loopLabels = []
+        self.lastType = None
 
     def start(self, parse_tree):
-        pass
+        return ''.join(self.visit_children(parse_tree))
 
     def decl(self, parse_tree):
         return code
@@ -126,6 +134,28 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         return code
 
     def lte(self, parse_tree):
+        code = ''.join(self.visit_children(parse_tree))
+        type = self.expressionTypes.pop()
+        if type.name == 'int':
+            code += """.text\n
+                \tlw $t0, 0($sp)\n
+                \tlw $t1, 8($sp)\n
+                \tsle $t2, $t1, $t0\n
+                \tsw $t2, 8($sp)\n
+                \taddi $sp, $sp, 8\n"""
+        elif type.name == 'double':
+            c = labelCounter() # labels TODO
+            code += """.text\n
+                \tli $t0, 0\n
+                \tl.d $f0, 0($sp)\n
+                \tl.d $f2, 8($sp)\n
+                \tc.le.d $f2, $f0\n
+                \tbc1f __double_le__{}\n
+                \tli $t0, 1\n
+                __double_le__{}:\tsw $t0, 8($sp)\n   
+                \taddi $sp, $sp, 8\n""".format(c, c)
+        self.expressionTypes.pop()
+        self.expressionTypes.append(Type('bool'))
         return code
 
     def gt(self, parse_tree):
@@ -138,15 +168,72 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         return code
 
     def sub(self, parse_tree):
+        code = ''.join(self.visit_children(parse_tree))
+        type = self.expressionTypes.pop()
+        if type.name == 'int':
+            code += """.text\n
+                \tlw $t0, 0($sp)\n
+                \tlw $t1, 8($sp)\n
+                \tsub $t2, $t1, $t0\n
+                \tsw $t2, 8($sp)\n
+                \taddi $sp, $sp, 8\n"""
+        else:
+            code += """.text\n
+                \tl.d $f0, 0($sp)\n
+                \tl.d $f2, 8($sp)\n
+                \tsub.d $f4, $f2, $f0\n
+                \ts.d $f4, 8($sp)\n
+                \taddi $sp, $sp, 8\n"""
         return code
 
     def mul(self, parse_tree):
+        code = ''.join(self.visit_children(parse_tree))
+        type = self.expressionTypes.pop()
+        if type.name == 'int':
+            code += """.text\n
+                \tlw   $t0, 0($sp)\n
+                \tlw   $t1, 8($sp)\n
+                \tmul  $t2, $t1, $t0\n
+                \tsw   $t2, 8($sp)\n
+                \taddi $sp, $sp, 8\n"""
+        elif type.name == 'double':
+            code += """.text\n
+                \tl.d      $f0, 0($sp)\n
+                \tl.d      $f2, 8($sp)\n
+                \tmul.d    $f4, $f2, $f0\n
+                \ts.d      $f4, 8($sp)\n
+                \taddi     $sp, $sp, 8\n"""
         return code
 
     def div(self, parse_tree):
+        code = ''.join(self.visit_children(parse_tree))
+        type = self.expressionTypes.pop()
+        if type.name == 'int':
+            code += """.text\n
+                \tlw $t0, 0($sp)\n
+                \tlw $t1, 8($sp)\n
+                \tdiv $t2, $t1, $t0\n
+                \tsw $t2, 8($sp)\n
+                \taddi $sp, $sp, 8\n"""
+        elif type.name == 'double':
+            code += """.text\n
+                \tl.d $f0, 0($sp)\n
+                \tl.d $f2, 8($sp)\n
+                \tdiv.d $f4, $f2, $f0\n
+                \ts.d $f4, 8($sp)\n
+                \taddi $sp, $sp, 8\n\n"""
         return code
 
     def mod(self, parse_tree):
+        code = ''.join(self.visit_children(parse_tree))
+        code += """.text\n
+            \tlw $t0, 0($sp)\n
+            \tlw $t1, 8($sp)\n
+            \tdiv $t1, $t0\n
+            \tmfhi $t2\n
+            \tsw $t2, 8($sp)\n
+            \taddi $sp, $sp, 8\n"""
+        self.expressionTypes.pop()
         return code
 
     def minus(self, parse_tree):
