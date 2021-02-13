@@ -95,4 +95,31 @@ def lib_functions():
     function_table['ReadChar__'] = 4
 
 
+def make_indentation(code):
+
+    space_count = 0
+    code = code.split("\n")
+    if len(code[0]) == 0:
+        code = code[1:]
+
+
+    for c in code[0]:
+        if c == ' ':
+            space_count = space_count+1
+        else:
+            break
+
+
+    for cd in code:
+        if cd[:space_count] == ' ' * space_count:
+            cd = cd[space_count:]
+        cd = cd + 'n'
+
+    code[-1][-1] = 'n'
+    code = ' '.join(code)
+    return code
+
+
 lib_functions()
+
+
