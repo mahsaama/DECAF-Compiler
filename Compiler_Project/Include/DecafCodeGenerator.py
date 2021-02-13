@@ -26,7 +26,6 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     label_counter = 0
     class_counter = 0
 
-
     def __init__(self):
         super().__init__()
         self.expressionTypes = []
@@ -303,117 +302,267 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         return ''.join(child_codes)
 
     def assignment(self, parse_tree):
-        return code
+        pass
 
     def logical_or(self, parse_tree):
-        return code
+        pass
 
     def logical_and(self, parse_tree):
-        return code
+        pass
 
     def equals(self, parse_tree):
-        return code
+        mips_code = ''.join(self.visit_children(parse_tree))
+        type = self.expressionTypes.pop()
+        if type.name == 'double' and type.dimension == 0:
+            c = labelCounter()
+            mips_code += """.text\n
+                \tli $t0, 0\n
+                \tl.d $f0, 0($sp)\n
+                \tl.d $f2, 8($sp)\n
+                \tc.eq.d $f0, $f2\n
+                \tbc1f _eq.d.{}\n
+                \tli $t0, 1\n'
+                _eq.d.{}:\tsw $t0, 8($sp)\n
+                \taddi $sp, $sp, 8\n""".format(c, c)
+        elif type.name == 'string' and type.dimension == 0:
+            mips_code += """.text\n
+                \tsw $t0, -8($sp)\n
+                \tsw $t1, -8($sp)\n
+                \tsw $a0, -12($sp)\n
+                \tsw $a1, -16($sp)\n
+                \tsw $v0, -20($sp)\n
+                \tsw $ra, -24($sp)\n
+                \tlw $a0, 0($sp)\n
+                \tlw $a1, 8($sp)\n
+                \tjal __strcmp__\n
+                \tsw $v0, 8($sp)\n
+                \tlw $t0, -4($sp)\n
+                \tlw $t1, -8($sp)\n
+                \tlw $a0, -12($sp)\n
+                \tlw $a1, -16($sp)\n
+                \tlw $v0, -20($sp)\n
+                \tlw $ra, -24($sp)\n
+                \taddi $sp, $sp, 8\n"""
+        elif self:
+            mips_code += """.text\n'
+                \tlw $t0, 0($sp)\n'
+                \tlw $t1, 8($sp)\n'
+                \tseq $t2, $t1, $t0\n'
+                \tsw $t2, 8($sp)\n'
+                \taddi $sp, $sp, 8\n"""
+        self.expressionTypes.pop()
+        self.expressionTypes.append(Type('bool'))
+        return mips_code
 
     def not_equals(self, parse_tree):
-        return code
+        mips_code = ''.join(self.visit_children(parse_tree))
+        type = self.expressionTypes.pop()
+        if type.name == 'double' and type.dimension == 0:
+            c = labelCounter()
+            mips_code += """.text\n
+                \tli $t0, 0\n
+                \tl.d $f0, 0($sp)\n
+                \tl.d $f2, 8($sp)\n
+                \tc.eq.d $f0, $f2\n
+                \tbc1t _neq.d.{}\n
+                \tli $t0, 1\n'
+                _neq.d.{}:\tsw $t0, 8($sp)\n
+                \taddi $sp, $sp, 8\n""".format(c, c)
+        elif type.name == 'string' and type.dimension == 0:
+            mips_code += """.text\n
+                \tsw $t0, -8($sp)\n
+                \tsw $t1, -8($sp)\n
+                \tsw $a0, -12($sp)\n
+                \tsw $a1, -16($sp)\n
+                \tsw $v0, -20($sp)\n
+                \tsw $ra, -24($sp)\n
+                \tlw $a0, 0($sp)\n
+                \tlw $a1, 8($sp)\n
+                \tjal __strcmp__\n
+                \tli $t0, 1\n
+                \tsub $v0, $t0, $v0\n
+                \tsw $v0, 8($sp)\n
+                \tlw $t0, -4($sp)\n
+                \tlw $t1, -8($sp)\n
+                \tlw $a0, -12($sp)\n
+                \tlw $a1, -16($sp)\n
+                \tlw $v0, -20($sp)\n
+                \tlw $ra, -24($sp)\n
+                \taddi $sp, $sp, 8\n"""
+        elif self:
+            mips_code += """.text\n'
+                \tlw $t0, 0($sp)\n'
+                \tlw $t1, 8($sp)\n'
+                \tsne $t2, $t1, $t0\n'
+                \tsw $t2, 8($sp)\n'
+                \taddi $sp, $sp, 8\n"""
+        self.expressionTypes.pop()
+        self.expressionTypes.append(Type('bool'))
+        return mips_code
 
     def lt(self, parse_tree):
-        return code
-
-    def lte(self, parse_tree):
-        code = ''.join(self.visit_children(parse_tree))
+        mips_code = ''.join(self.visit_children(parse_tree))
         type = self.expressionTypes.pop()
         if type.name == 'int':
-            code += """.text\n
+            mips_code += """.text\n
+                \tlw $t0, 0($sp)\n
+                \tlw $t1, 8($sp)\n
+                \tslt $t2, $t1, $t0\n
+                \tsw $t2, 8($sp)\n
+                \taddi $sp, $sp, 8\n"""
+        elif type.name == 'double':
+            c = labelCounter()
+            mips_code += """.text\n
+                \tli $t0, 0\n
+                \tl.d $f0, 0($sp)\n
+                \tl.d $f2, 8($sp)\n
+                \tc.lt.d $f2, $f0\n
+                \tbc1f _lt.d.{}\n
+                \tli $t0, 1\n
+                _lt.d.{}:\tsw $t0, 8($sp)\n
+                \taddi $sp, $sp, 8\n""".format(c, c)
+        self.expressionTypes.pop()
+        self.expressionTypes.append(Type('bool'))
+        return mips_code
+
+    def lte(self, parse_tree):
+        mips_code = ''.join(self.visit_children(parse_tree))
+        type = self.expressionTypes.pop()
+        if type.name == 'int':
+            mips_code += """.text\n
                 \tlw $t0, 0($sp)\n
                 \tlw $t1, 8($sp)\n
                 \tsle $t2, $t1, $t0\n
                 \tsw $t2, 8($sp)\n
                 \taddi $sp, $sp, 8\n"""
         elif type.name == 'double':
-            c = labelCounter() # labels TODO
-            code += """.text\n
+            c = labelCounter()
+            mips_code += """.text\n
                 \tli $t0, 0\n
                 \tl.d $f0, 0($sp)\n
                 \tl.d $f2, 8($sp)\n
                 \tc.le.d $f2, $f0\n
-                \tbc1f __double_le__{}\n
+                \tbc1f _lte.d.{}\n
                 \tli $t0, 1\n
-                __double_le__{}:\tsw $t0, 8($sp)\n   
+                _lte.d.{}:\tsw $t0, 8($sp)\n   
                 \taddi $sp, $sp, 8\n""".format(c, c)
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
-        return code
+        return mips_code
 
     def gt(self, parse_tree):
-        return code
-
-    def gte(self, parse_tree):
-        return code
-
-    def sum(self, parse_tree):
-        return code
-
-    def sub(self, parse_tree):
-        code = ''.join(self.visit_children(parse_tree))
+        mips_code = ''.join(self.visit_children(parse_tree))
         type = self.expressionTypes.pop()
         if type.name == 'int':
-            code += """.text\n
+            mips_code += """.text\n
+                \tlw $t0, 0($sp)\n
+                \tlw $t1, 8($sp)\n
+                \tsgt $t2, $t1, $t0\n
+                \tsw $t2, 8($sp)\n
+                \taddi $sp, $sp, 8\n"""
+        elif type.name == 'double':
+            c = labelCounter()
+            mips_code += """.text\n
+                \tli $t0, 0\n
+                \tl.d $f0, 0($sp)\n
+                \tl.d $f2, 8($sp)\n
+                \tc.le.d $f2, $f0\n
+                \tbc1t _gt.d.{}\n
+                \tli $t0, 1\n
+                _gt.d.{}:\tsw $t0, 8($sp)\n
+                \taddi $sp, $sp, 8\n""".format(c, c)
+        self.expressionTypes.pop()
+        self.expressionTypes.append(Type('bool'))
+        return mips_code
+
+    def gte(self, parse_tree):
+        mips_code = ''.join(self.visit_children(parse_tree))
+        type = self.expressionTypes.pop()
+        if type.name == 'int':
+            mips_code += """.text\n
+                        \tlw $t0, 0($sp)\n
+                        \tlw $t1, 8($sp)\n
+                        \tsge $t2, $t1, $t0\n
+                        \tsw $t2, 8($sp)\n
+                        \taddi $sp, $sp, 8\n"""
+        elif type.name == 'double':
+            c = labelCounter()
+            mips_code += """.text\n
+                        \tli $t0, 0\n
+                        \tl.d $f0, 0($sp)\n
+                        \tl.d $f2, 8($sp)\n
+                        \tc.lt.d $f2, $f0\n
+                        \tbc1t _gte.d.{}\n
+                        \tli $t0, 1\n
+                        _gte.d.{}:\tsw $t0, 8($sp)\n
+                        \taddi $sp, $sp, 8\n""".format(c, c)
+        self.expressionTypes.pop()
+        self.expressionTypes.append(Type('bool'))
+        return mips_code
+
+    def sum(self, parse_tree):
+        pass
+
+    def sub(self, parse_tree):
+        mips_code = ''.join(self.visit_children(parse_tree))
+        type = self.expressionTypes.pop()
+        if type.name == 'int':
+            mips_code += """.text\n
                 \tlw $t0, 0($sp)\n
                 \tlw $t1, 8($sp)\n
                 \tsub $t2, $t1, $t0\n
                 \tsw $t2, 8($sp)\n
                 \taddi $sp, $sp, 8\n"""
         else:
-            code += """.text\n
+            mips_code += """.text\n
                 \tl.d $f0, 0($sp)\n
                 \tl.d $f2, 8($sp)\n
                 \tsub.d $f4, $f2, $f0\n
                 \ts.d $f4, 8($sp)\n
                 \taddi $sp, $sp, 8\n"""
-        return code
+        return mips_code
 
     def mul(self, parse_tree):
-        code = ''.join(self.visit_children(parse_tree))
+        mips_code = ''.join(self.visit_children(parse_tree))
         type = self.expressionTypes.pop()
         if type.name == 'int':
-            code += """.text\n
+            mips_code += """.text\n
                 \tlw   $t0, 0($sp)\n
                 \tlw   $t1, 8($sp)\n
                 \tmul  $t2, $t1, $t0\n
                 \tsw   $t2, 8($sp)\n
                 \taddi $sp, $sp, 8\n"""
         elif type.name == 'double':
-            code += """.text\n
+            mips_code += """.text\n
                 \tl.d      $f0, 0($sp)\n
                 \tl.d      $f2, 8($sp)\n
                 \tmul.d    $f4, $f2, $f0\n
                 \ts.d      $f4, 8($sp)\n
                 \taddi     $sp, $sp, 8\n"""
-        return code
+        return mips_code
 
     def div(self, parse_tree):
-        code = ''.join(self.visit_children(parse_tree))
+        mips_code = ''.join(self.visit_children(parse_tree))
         type = self.expressionTypes.pop()
         if type.name == 'int':
-            code += """.text\n
+            mips_code += """.text\n
                 \tlw $t0, 0($sp)\n
                 \tlw $t1, 8($sp)\n
                 \tdiv $t2, $t1, $t0\n
                 \tsw $t2, 8($sp)\n
                 \taddi $sp, $sp, 8\n"""
         elif type.name == 'double':
-            code += """.text\n
+            mips_code += """.text\n
                 \tl.d $f0, 0($sp)\n
                 \tl.d $f2, 8($sp)\n
                 \tdiv.d $f4, $f2, $f0\n
                 \ts.d $f4, 8($sp)\n
                 \taddi $sp, $sp, 8\n\n"""
-        return code
+        return mips_code
 
     def mod(self, parse_tree):
-        code = ''.join(self.visit_children(parse_tree))
-        code += """.text\n
+        mips_code = ''.join(self.visit_children(parse_tree))
+        mips_code += """.text\n
             \tlw $t0, 0($sp)\n
             \tlw $t1, 8($sp)\n
             \tdiv $t1, $t0\n
@@ -421,43 +570,43 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             \tsw $t2, 8($sp)\n
             \taddi $sp, $sp, 8\n"""
         self.expressionTypes.pop()
-        return code
+        return mips_code
 
     def minus(self, parse_tree):
-        return code
+        pass
 
     def logical_not(self, parse_tree):
-        return code
+        pass
 
     def read_char(self, parse_tree):
-        return code
+        pass
 
     def read_int(self, parse_tree):
-        return code
+        pass
 
     def read_line(self, parse_tree):
-        return code
+        pass
 
     def new_class(self, parse_tree):
-        return code
+        pass
 
     def new_array(self, parse_tree):
-        return code
+        pass
 
     def val(self, parse_tree):
-        return code
+        pass
 
     def ident_l_value(self, parse_tree):
-        return code
+        pass
 
     def mem_access_l_value(self, parse_tree):
-        return code
+        pass
 
     def array_access_l_value(self, parse_tree):
-        return code
+        pass
 
     def method_call(self, parse_tree):
-        return code
+        pass
 
     def l_value(self, parse_tree):
         return ''.join(self.visit_children(parse_tree))
@@ -466,25 +615,26 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         pass
 
     def actuals(self, parse_tree):
-        return code
+        pass
 
     def int_push(self, parse_tree):
-        return code
+        pass
 
     def double_push(self, parse_tree):
-        return code
+        pass
 
     def bool_push(self, parse_tree):
-        return code
+        pass
 
     def string_push(self, parse_tree):
-        return code
+        pass
 
     def null(self, parse_tree):
-        return code
+        pass
 
     def get_type(self, typ):
         pass
+
 
 def decafCGEN(code):
     parser = Lark(Grammar, parser="lalr")
@@ -493,8 +643,9 @@ def decafCGEN(code):
     ParentTree().visit(parse_tree)
     set_parents()
     Traversal().visit(parse_tree)
-    MIPS_code = CodeGenerator().visit(parse_tree)
-    return MIPS_code
+    mips_code = CodeGenerator().visit(parse_tree)
+    return mips_code
+
 
 if __name__ == '__main__':
     print(decafCGEN(code))
