@@ -333,7 +333,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         if node.data == 'if_stmt':
             mips_code += self.visit(node)
 
-        elif mips_code.data == 'while_stmt':
+        elif node.data == 'while_stmt':
             mips_code += self.visit(node)
 
         elif node.data == 'for_stmt':
@@ -347,6 +347,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
         elif node.data == 'return_stmt':
             mips_code += self.visit(node)
+
             func_name = ''
 
             if '__class__' in self.current_scope:
@@ -357,13 +358,15 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                 func_name = self.current_scope.split('/')[1]
                 funct = function_objects[function_table[func_name]]
 
-            if funct.return_type.name == 'double' and funct.return_type.dimension == 0:
+            if funct[0].return_type.name == 'double' and funct[1].return_type.size == 0:
                 mips_code += '\tl.d   $f30, 0($sp)\n' + '\taddi $sp, $sp, 8\n'
 
-            elif funct.return_type.name != 'void':
+            elif funct[0].return_type.name != 'void':
                 mips_code += '\tlw   $t8, 0($sp)\n' + '\taddi $sp, $sp, 8\n'
 
-            for local_var in reversed(self.stack_local_params[-self.stack[-1]:]):
+
+            c = self.stack_counter[-1]
+            for local_var in reversed(self.stack[-c:]):
                 name = local_var[0]
                 type = local_var[1]
                 mips_code += '.text\n'

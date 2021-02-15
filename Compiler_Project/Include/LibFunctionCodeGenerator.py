@@ -465,4 +465,4 @@ def primitve_inst():
 
 
 
-print(primitve_inst())
+#print(primitve_inst())
