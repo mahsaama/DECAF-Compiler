@@ -314,7 +314,7 @@ int main() {
   Binky c;
   b = new Binky;
   c = new Binky;
-  b.Method30(c);
+  b.Method3(c);
 }
 
 """

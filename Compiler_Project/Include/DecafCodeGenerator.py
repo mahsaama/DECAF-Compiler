@@ -149,9 +149,9 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         # stmt_block
         mips_code += self.visit(stmt_block)
 
-        locals_cnt = self.stack[-1]
+        locals_cnt = self.stack_counter[-1]
         self.stack = self.stack[:-locals_cnt]
-        self.stack.pop()
+        self.stack_counter.pop()
         # remove local from scope
         self.current_scope = POP(self.current_scope)
         # remove formals from scope
@@ -253,7 +253,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             if child.data == 'variable_decl':
 
                 mips_code += self.visit(child)
-                self.stack[-1] += 1
+                self.stack_counter[-1] += 1
 
                 var_name = child.children[0].children[1].value
                 var_type = st_objects[symbol_table[(self.current_scope, var_name)]].type
@@ -263,7 +263,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                     [self.current_scope + "/" + var_name, var_type])
                 mips_code += '.text\n'
 
-                if var_type.var_name == 'double' and var_type.size == 0:
+                if var_type.name == 'double' and var_type.size == 0:
                     mips_code += '\tl.d  $f0, {}\n'.format((self.current_scope + "/" + var_name).replace("/", "_")) + \
                                  '\taddi $sp, $sp, -8\n' + \
                                  '\ts.d  $f0, 0($sp)\n\n'
@@ -280,14 +280,14 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         for node in reversed(parse_tree.children):
             if node.data == 'variable_decl':
 
-                self.stack[-1] -= 1
+                self.stack_counter[-1] -= 1
                 var_name = node.children[0].children[1].value
-                var_type = SymbolTableObject[symbol_table[(self.current_scope, var_name)]].type
+                var_type = st_objects[symbol_table[(self.current_scope, var_name)]].type
                 self.stack.pop()
 
                 mips_code += '.text\n'
 
-                if var_type.name == 'double' and var_type.dimension == 0:
+                if var_type.name == 'double' and var_type.size == 0:
                     mips_code += '\tl.d  $f0, 0($sp)\n' + '\taddi $sp, $sp, 8\n' + \
                                  '\ts.d  $f0, {}\n\n'.format(
                                      (self.current_scope + "/" + var_name).replace("/", "_"))
@@ -299,8 +299,8 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
         mips_code += 'end_stmt_{}:\n'.format(stmt_num)
 
-        self.stmt_labels = self.stmt_labels[:len(self.stmtLabels)]
-        self.stmt_labels.append(stmt_num)
+        self.stmtLabels = self.stmtLabels[:len(self.stmtLabels)]
+        self.stmtLabels.append(stmt_num)
         self.current_scope = POP(self.current_scope)
         return mips_code
 
@@ -367,23 +367,23 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
             c = self.stack_counter[-1]
             for local_var in reversed(self.stack[-c:]):
-                name = local_var[0]
-                type = local_var[1]
+                var_name = local_var[0]
+                var_type = local_var[1]
                 mips_code += '.text\n'
-                if type.name == 'double' and type.dimension == 0:
+                if var_type.name == 'double' and var_type.size == 0:
                     mips_code = '\tl.d  $f0, 0($sp)\n' + \
                                 '\taddi $sp, $sp, 8\n' + \
-                                '\ts.d  $f0, {}\n\n'.format(name.replace("/", "_"))
+                                '\ts.d  $f0, {}\n\n'.format(var_name.replace("/", "_"))
                 else:
                     mips_code += '\tlw   $t0, 0($sp)\n'
                     mips_code += '\taddi $sp, $sp, 8\n'
-                    mips_code += '\tsw   $t0, {}\n\n'.format(name.replace("/", "_"))
+                    mips_code += '\tsw   $t0, {}\n\n'.format(var_name.replace("/", "_"))
 
-            if funct.return_type.name != 'void':
+            if funct[0].return_type.name != 'void':
                 mips_code += '\taddi $sp, $sp, -8\n'
                 mips_code += '\tsw   $t8, 0($sp)\n'
 
-            elif funct.return_type.name == 'double' and funct.return_type.dimension == 0:
+            elif funct[0].return_type.name == 'double' and funct[1].return_type.size == 0:
                 mips_code += '\taddi $sp, $sp, -8\n'
                 mips_code += '\ts.d   $f30, 0($sp)\n'
 
@@ -404,7 +404,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             mips_code += self.visit(node)
 
         mips_code += 'end_stmt_{}:\n'.format(stmt_num)
-        self.stmtLabels = self.stmt_labels[:len(self.stmtLabels)]
+        self.stmtLabels = self.stmtLabels[:len(self.stmtLabels)]
         self.stmtLabels.append(stmt_num)
         return mips_code
 
@@ -1195,7 +1195,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         if len(scope.split('/')) == 3 and '__class__' in scope.split('/')[1]:
             class_name = scope.split('/')[1][9:]
             function = class_type_objects[class_table[class_name]].find_function(scope.split('/')[-1])
-            formal_type, index = function.find_formal(name)
+            formal_type, index = function[0].find_formal(name)
             mips_code = """.text\n
                 \taddi $t0, $fp, -{}\n
                 \tsub $sp, $sp, 8\n
@@ -1255,7 +1255,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
         mips_code =''
         mips_code += self.visit(parse_tree.children[0])
-        if self.expressionTypes[-1].dimension > 0:
+        if self.expressionTypes[-1].size > 0:
             mips_code += """
             .text\n
             \tlw $t0, 0($sp)\n
@@ -1282,7 +1282,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         function_name = parse_tree.children[1].value
 
 
-        idx = class_type_objects[class_table[class_type.name]].find_function_index(function_name)
+        idx = class_type_objects[class_table[class_type.name]].find_function(function_name)
 
 
         mips_code += '.text\t\t\t# method call {} {}\n'.format(class_type.name, function_name)
@@ -1291,7 +1291,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         \taddi $sp, $sp, 8\n
         \tlw $t0, 0($t0)\n"""
 
-        mips_code += '\taddi $t0, $t0, {}\n'.format(4 * idx)
+        mips_code += '\taddi $t0, $t0, {}\n'.format(4 * idx[1])
         mips_code += '\tlw $t0, 0($t0)\n'
         mips_code += '\taddi $fp, $sp, {}\n'.format(8 * len(parse_tree.children[2].children))
         mips_code += '\tjalr $t0\n'
@@ -1299,7 +1299,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
         mips_code += '.text\t # call {}\n'.format(function_name)
 
-        function = class_type_objects[class_table[class_type.name]].functions[idx]
+        function = class_type_objects[class_table[class_type.name]].functions[idx[1]]
 
         if function.return_type.name == 'double' and function.return_type.dimension == 0:
             mips_code += """
@@ -1588,7 +1588,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             return Type(t)
 
         ret = self.get_type(t.children[0])
-        ret.dimension += 1
+        ret.size += 1
         return ret
 
 
