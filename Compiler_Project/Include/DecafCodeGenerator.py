@@ -1241,8 +1241,86 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         self.expressionTypes[-1].dimension -= 1
         return mips_code
 
+
     def method_call(self, parse_tree):
-        pass
+
+        mips_code =''
+        mips_code += self.visit(parse_tree.children[0])
+        if self.expressionTypes[-1].dimension > 0:
+            mips_code += """
+            .text\n
+            \tlw $t0, 0($sp)\n
+            \tlw $t0, -8($t0)\n
+            \tsw $t0, 0($sp)\n\n"""
+
+            self.expressionTypes.pop()
+            self.expressionTypes.append(Type('int'))
+            return mips_code
+        self.expressionTypes.pop()
+        mips_code = """.text\n
+        \taddi $sp, $sp, -8\n
+        \tsw $ra, 0($sp)\n
+        \taddi $sp, $sp, -8\n
+        \tsw $fp, 0($sp)\n"""
+
+        mips_code += self.visit(parse_tree.children[0])
+        for ch in parse_tree.children[2].children:
+            mips_code += self.visit(ch)
+
+        mips_code += self.visit(parse_tree.children[0])
+
+        class_type = self.expressionTypes.pop()
+        function_name = parse_tree.children[1].value
+
+
+        idx = class_type_objects[class_table[class_type.name]].find_function_index(function_name)
+
+
+        mips_code += '.text\t\t\t# method call {} {}\n'.format(class_type.name, function_name)
+        mips_code+="""
+        \tlw $t0, 0($sp)\n
+        \taddi $sp, $sp, 8\n
+        \tlw $t0, 0($t0)\n"""
+
+        mips_code += '\taddi $t0, $t0, {}\n'.format(4 * idx)
+        mips_code += '\tlw $t0, 0($t0)\n'
+        mips_code += '\taddi $fp, $sp, {}\n'.format(8 * len(parse_tree.children[2].children))
+        mips_code += '\tjalr $t0\n'
+
+
+        mips_code += '.text\t # call {}\n'.format(function_name)
+
+        function = class_type_objects[class_table[class_type.name]].functions[idx]
+
+        if function.return_type.name == 'double' and function.return_type.dimension == 0:
+            mips_code += """
+            \tl.d   $f30, 0($sp)\n
+            \taddi $sp, $sp, 8\n"""
+
+        elif function.return_type.name != 'void':
+            mips_code += '\tlw   $t8, 0($sp)\n'
+            mips_code += '\taddi $sp, $sp, 8\n'
+        mips_code += '\taddi $sp, $sp, {}\n'.format(len(parse_tree.children[2].children) * 8 + 8)
+        for i in range(len(parse_tree.children[2].children)):
+            self.expressionTypes.pop()
+        mips_code += """
+        \tlw $fp, 0($sp)\n
+         \taddi $sp, $sp, 8\n
+        \tlw $ra, 0($sp)\n
+        \taddi $sp, $sp, 8\n"""
+
+        if function.return_type.name == 'double' and function.return_type.dimension == 0:
+            mips_code += """
+            \taddi $sp, $sp, -8\n
+            \ts.d   $f30, 0($sp)\n"""
+
+        elif function.return_type.name != 'void':
+            mips_code += '\taddi $sp, $sp, -8\n'
+            mips_code += '\tsw   $t8, 0($sp)\n'
+        self.expressionTypes.append(deepcopy(function.return_type))
+        return mips_code
+
+
 
     def l_value(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
