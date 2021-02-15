@@ -97,29 +97,39 @@ def lib_functions():
 
 
 def make_indentation(code):
-
-    space_count = 0
-    code = code.split("\n")
-    if len(code[0]) == 0:
-        code = code[1:]
-
-
-    for c in code[0]:
-        if c == ' ':
-            space_count = space_count+1
+    codes = code.split('\n')
+    if len(codes[0]) == 0:
+        codes = codes[1:]
+    remove = 0
+    for char in codes[0]:
+        if char == ' ':
+            remove += 1
         else:
             break
-
-
-    for cd in code:
-        if cd[:space_count] == ' ' * space_count:
-            cd = cd[space_count:]
-        cd = cd + 'n'
-
-    code[-1][-1] = 'n'
-    code = ' '.join(code)
-    return code
-
+    for i in range(len(codes)):
+        codes[i] += '\n'
+        line = codes[i]
+        if line[:remove] == ' ' * remove:
+            codes[i] = line[remove:]
+    if codes[-1][-1] != '\n':
+        codes[-1][-1] += '\n'
+    return ''.join(codes)
+    # space_count = 0
+    # code = code.split("\n")
+    # if len(code[0]) == 0:
+    #     code = code[1:]
+    # for c in code[0]:
+    #     if c == ' ':
+    #         space_count += 1
+    #     else:
+    #         break
+    # for cd in code:
+    #     cd += '\n'
+    #     if cd[:space_count] == ' ' * space_count:
+    #         cd = cd[space_count:]
+    # if code[-1][-1] != '\n':
+    #     code[-1][-1] += '\n'
+    # return ''.join(code)
 
 lib_functions()
 

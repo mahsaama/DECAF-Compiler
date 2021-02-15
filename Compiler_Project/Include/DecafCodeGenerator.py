@@ -1,11 +1,6 @@
-from lark import Lark, Tree
-from lark.visitors import Interpreter
-
 from Compiler_Project.Include.SymbolTable import *
 from Compiler_Project.Include.traversal import *
-from Compiler_Project.Include.LibFunctionCodeGenerator import *
 from Compiler_Project.Include.function import make_indentation
-
 from copy import deepcopy
 
 
@@ -173,7 +168,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         for variable in parse_tree.children:
             name = variable.children[1].value
             print(name)
-            f_type = SymbolTableObject[symbol_table[(self.current_scope, name)]].type
+            f_type = st_objects[symbol_table[(self.current_scope, name)]].type
             mips_code += '.data\n' + '.align 2\n'
             default_size = 4
 
@@ -260,20 +255,20 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                 mips_code += self.visit(child)
                 self.stack_local_params_count[-1] += 1
 
-                name = child.children[0].children[1].value
-                type = SymbolTableObject[
-                    symbol_table[(self.current_scope, name)]].type
+                var_name = child.children[0].children[1].value
+                var_type = SymbolTableObject[
+                    symbol_table[(self.current_scope, var_name)]].type
 
                 self.stack.append(
-                    [self.current_scope + "/" + name, type])
+                    [self.current_scope + "/" + var_name, type])
                 mips_code += '.text\n'
 
-                if type.name == 'double' and type.dimension == 0:
-                    mips_code += '\tl.d  $f0, {}\n'.format((self.current_scope + "/" + name).replace("/", "_")) + \
+                if type.var_name == 'double' and type.dimension == 0:
+                    mips_code += '\tl.d  $f0, {}\n'.format((self.current_scope + "/" + var_name).replace("/", "_")) + \
                                  '\taddi $sp, $sp, -8\n' + \
                                  '\ts.d  $f0, 0($sp)\n\n'
                 else:
-                    mips_code += '\tla   $t0, {}\n'.format((self.current_scope + "/" + name).replace("/", "_")) + \
+                    mips_code += '\tla   $t0, {}\n'.format((self.current_scope + "/" + var_name).replace("/", "_")) + \
                                  '\tlw   $t1, 0($t0)\n' + \
                                  '\taddi $sp, $sp, -8\n' + '\tsw   $t1, 0($sp)\n\n'
 
@@ -286,22 +281,21 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             if node.data == 'variable_decl':
 
                 self.stack_local_params_count[-1] -= 1
-                variable_name = child.children[0].children[1].value
-                variable_type = SymbolTableObject[symbol_table[(self.current_scope, variable_name)]].type
+                var_name = child.children[0].children[1].value
+                var_type = SymbolTableObject[symbol_table[(self.current_scope, var_name)]].type
                 self.stack_local_params.pop()
 
                 mips_code += '.text\n'
 
-                if variable_type.name == 'double' and variable_type.dimension == 0:
+                if var_type.name == 'double' and var_type.dimension == 0:
                     mips_code += '\tl.d  $f0, 0($sp)\n' + '\taddi $sp, $sp, 8\n' + \
                                  '\ts.d  $f0, {}\n\n'.format(
-                                     (self.current_scope + "/" + variable_name).replace("/", "_"))
+                                     (self.current_scope + "/" + var_name).replace("/", "_"))
 
                 else:
                     mips_code += '\tlw   $t1, 0($sp)\n' + \
                                  '\taddi $sp, $sp, 8\n' + \
-                                 '\tla   $t0, {}\n'.format((self.current_scope + "/" + variable_name).replace("/",
-                                                                                                              "_")) + '\tsw   $t1, 0($t0)\n\n'
+                                 '\tla   $t0, {}\n'.format((self.current_scope + "/" + var_name).replace("/","_")) + '\tsw   $t1, 0($t0)\n\n'
 
         mips_code += 'end_stmt_{}:\n'.format(stmt_num)
 
