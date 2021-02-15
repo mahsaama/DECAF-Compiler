@@ -102,7 +102,7 @@ Grammar = """
     %ignore MULTILINE_COMMENT
 """
 
-sp = ''
+sp = 'root'
 stack = [sp]
 st_objects = []
 symbol_table = {}
