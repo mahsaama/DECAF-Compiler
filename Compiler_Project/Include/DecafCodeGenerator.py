@@ -1515,7 +1515,10 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
 def decafCGEN(code):
     parser = Lark(Grammar, parser="lalr")
-    parse_tree = parser.parse(code)
+    try:
+        parse_tree = parser.parse(code)
+    except:
+        sys.exit("Syntax Error")
     SymbolTable().visit(parse_tree)
     ParentTree().visit(parse_tree)
     set_parents()

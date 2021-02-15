@@ -1,9 +1,12 @@
+import sys
+
 import lark
 from lark import Lark, Tree
 from lark.lexer import Token
 from lark.visitors import Interpreter
 from Compiler_Project.Include.function import Type, Class, Function, class_type_objects, function_objects, \
     function_table, class_table
+from Compiler_Project.Include.traversal import *
 
 Grammar = """
     start : (decl)+
@@ -292,7 +295,7 @@ class Binky {
     Print(1);
   }
 
-void Method2() {
+  void Method2() {
     this.Method1();
     Print(2);
     Method1();
@@ -311,13 +314,23 @@ int main() {
   Binky c;
   b = new Binky;
   c = new Binky;
-  b.Method3(c);
+  b.Method30(c);
 }
 
 """
 
 if __name__ == '__main__':
+
     parser = Lark(Grammar, parser="lalr")
-    parse_tree = parser.parse(code)
+    try:
+        parse_tree = parser.parse(code)
+    except:
+        sys.exit("Syntax Error")
+
     SymbolTable().visit(parse_tree)
     print(symbol_table)
+    print(class_table)
+    print(function_table)
+    print(parent_classes)
+    print(class_type_objects)
+    print(function_objects)

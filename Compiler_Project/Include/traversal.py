@@ -6,19 +6,20 @@ from Compiler_Project.Include.function import class_type_objects, class_table, C
 
 
 class ParentTree(Interpreter):
-    def decl(self, tree):
-        for declaration in tree.children:
+    def decl(self, parse_tree):
+        for declaration in parse_tree.children:
             if declaration.data == 'class_decl':
                 self.visit(declaration)
 
-    def class_decl(self, tree):
-        ident = tree.children[0]
-
-        if type(tree.children[1]) == lark.lexer.Token:
-            parent_name = tree.children[1].value
+    def class_decl(self, parse_tree):
+        # Set children in parent classes
+        ident = parse_tree.children[0]
+        if type(parse_tree.children[1]) == lark.lexer.Token:
+            parent_name = parse_tree.children[1].value
             parent = class_type_objects[class_table[parent_name]]
             parent.children.append(ident.value)
         else:
+            # Create a class for parents
             parent_classes.append(ident.value)
 
 
@@ -36,16 +37,16 @@ def tree_traversal(parent_class: Class):
             parent_class_function_names = set()
             for func in parent_class.functions:
                 parent_class_function_names.add(func.name)
-
+            # override functions in child class
             for func in child_functions:
                 for i in range(len(child_class.functions)):
                     if child_class.functions[i].name == func.name:
                         child_class.functions[i] = func
-
+            # add remained functions
             for func in child_functions:
                 if func.name not in parent_class_function_names:
                     child_class.functions.append(func)
-
+            # do this like domino
             tree_traversal(child_class)
 
 

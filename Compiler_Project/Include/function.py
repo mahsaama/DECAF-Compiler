@@ -50,10 +50,10 @@ class Function:
             self.formals = []
         else:
             self.formals = formals
+
         self.label = label
 
     def find_formal(self, name: str):
-        print
         counter = 0
         for formal in self.formals:
             if formal[0] == name:
@@ -63,6 +63,7 @@ class Function:
 
 
 def lib_functions():
+    # Add library functions
     function_objects.append(
         Function(name='itob', label='_itob_', return_type=Type('bool'), formals=[['ival', Type('int')]])
     )
