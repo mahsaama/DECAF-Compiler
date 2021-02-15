@@ -24,6 +24,7 @@ class Class:
         class_type_objects.append(self)
 
     def find_function(self, name):
+
         counter = 0
         for func in self.functions:
             if func.name == name:
