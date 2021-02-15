@@ -144,7 +144,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         # formal
         mips_code += self.visit(formals)
         self.current_scope += "/_local"
-        self.stack.append(0)
+        self.stack_counter.append(0)
 
         # stmt_block
         mips_code += self.visit(stmt_block)
@@ -253,17 +253,17 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             if child.data == 'variable_decl':
 
                 mips_code += self.visit(child)
-                self.stack_local_params_count[-1] += 1
+                self.stack[-1] += 1
 
                 var_name = child.children[0].children[1].value
-                var_type = SymbolTableObject[
-                    symbol_table[(self.current_scope, var_name)]].type
+                var_type = st_objects[symbol_table[(self.current_scope, var_name)]].type
+
 
                 self.stack.append(
-                    [self.current_scope + "/" + var_name, type])
+                    [self.current_scope + "/" + var_name, var_type])
                 mips_code += '.text\n'
 
-                if type.var_name == 'double' and type.dimension == 0:
+                if var_type.var_name == 'double' and var_type.size == 0:
                     mips_code += '\tl.d  $f0, {}\n'.format((self.current_scope + "/" + var_name).replace("/", "_")) + \
                                  '\taddi $sp, $sp, -8\n' + \
                                  '\ts.d  $f0, 0($sp)\n\n'
@@ -280,10 +280,10 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         for node in reversed(parse_tree.children):
             if node.data == 'variable_decl':
 
-                self.stack_local_params_count[-1] -= 1
-                var_name = child.children[0].children[1].value
+                self.stack[-1] -= 1
+                var_name = node.children[0].children[1].value
                 var_type = SymbolTableObject[symbol_table[(self.current_scope, var_name)]].type
-                self.stack_local_params.pop()
+                self.stack.pop()
 
                 mips_code += '.text\n'
 
