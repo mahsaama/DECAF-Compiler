@@ -1,4 +1,1753 @@
-{-123-a35,id3a,+*;}[||===!=()&&]<><=>==
-    a[24]="7"; n!=if;
-false,-if;true32;
-forpar
+C:\Users\ARIAN\PycharmProjects\Test\venv\Scripts\python.exe C:/Users/ARIAN/Desktop/com/cgen_attemp.py
+.text
+root_dtoi:
+.data
+.align 2
+root_dtoi_x: .space 8
+.text
+start_stmt_1:
+start_stmt_2:
+# if starts here:
+.text
+	la $t0, root_dtoi_x
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	l.d $f0, 0($t0)
+	s.d $f0, 0($sp)
+
+.text
+	li.d $f0, 0.0
+	sub $sp, $sp, 8
+	s.d $f0, 0($sp)
+
+.text
+	li $t0, 0
+	l.d $f0, 0($sp)
+	l.d $f2, 8($sp)
+	c.lt.d $f2, $f0
+	bc1t __double_lt__3
+	li $t0, 1
+__double_lt__3:	sw $t0, 8($sp)
+	addi $sp, $sp, 8
+
+.text				#If
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, end_stmt_4
+    j  start_stmt_4
+
+	start_stmt_4:
+start_stmt_6:
+.text
+	l.d  $f0, root_dtoi__dval
+	addi $sp, $sp, -8
+	s.d  $f0, 0($sp)
+
+.text
+	la $t0, root_dtoi_x
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	l.d $f0, 0($t0)
+	s.d $f0, 0($sp)
+
+.text
+	l.d  $f0, 0($sp)
+	s.d  $f0, root_dtoi__dval
+	addi $sp, $sp, 8
+
+.text
+	addi $sp, $sp, -8
+	sw   $ra, 0($sp)
+	jal root_dtoi_
+	lw   $t8, 0($sp)
+	addi $sp, $sp, 8
+	lw   $ra, 0($sp)
+	addi $sp, $sp, 8
+
+	l.d  $f0, 0($sp)
+	addi $sp, $sp, 8
+	s.d  $f0, root_dtoi__dval
+
+	addi $sp, $sp, -8
+	sw   $t8, 0($sp)
+# return type is int 0
+	lw   $t8, 0($sp)
+	addi $sp, $sp, 8
+	addi $sp, $sp, -8
+	sw   $t8, 0($sp)
+	jr   $ra
+
+end_stmt_6:
+	end_stmt_4:
+end_stmt_2:
+start_stmt_7:
+.text
+	l.d  $f0, root_dtoi__dval
+	addi $sp, $sp, -8
+	s.d  $f0, 0($sp)
+
+.text
+	la $t0, root_dtoi_x
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	l.d $f0, 0($t0)
+	s.d $f0, 0($sp)
+
+.text				# Neg double
+    l.d $f0, 0($sp)
+    neg.d $f0, $f0
+    s.d $f0, 0($sp)
+##
+
+.text
+	li.d $f0, 0.00000000001
+	sub $sp, $sp, 8
+	s.d $f0, 0($sp)
+
+.text
+	l.d $f0, 0($sp)
+	l.d $f2, 8($sp)
+	sub.d $f4, $f2, $f0
+	s.d $f4, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	l.d  $f0, 0($sp)
+	s.d  $f0, root_dtoi__dval
+	addi $sp, $sp, 8
+
+.text
+	addi $sp, $sp, -8
+	sw   $ra, 0($sp)
+	jal root_dtoi_
+	lw   $t8, 0($sp)
+	addi $sp, $sp, 8
+	lw   $ra, 0($sp)
+	addi $sp, $sp, 8
+
+	l.d  $f0, 0($sp)
+	addi $sp, $sp, 8
+	s.d  $f0, root_dtoi__dval
+
+	addi $sp, $sp, -8
+	sw   $t8, 0($sp)
+# return type is int 0
+.text				# Neg int
+    lw $t0, 0($sp)
+    sub $t0, $zero, $t0
+    sw $t0, 0($sp)
+##
+
+	lw   $t8, 0($sp)
+	addi $sp, $sp, 8
+	addi $sp, $sp, -8
+	sw   $t8, 0($sp)
+	jr   $ra
+
+end_stmt_7:
+start_stmt_8:
+	lw   $t8, 0($sp)
+	addi $sp, $sp, 8
+	addi $sp, $sp, -8
+	sw   $t8, 0($sp)
+	jr   $ra
+
+end_stmt_8:
+end_stmt_1:
+.text
+root_ReadInteger__:
+.text
+start_stmt_9:
+.data
+.align 2
+root_ReadInteger____local_1_res: .space 4
+
+.text
+	la   $t0, root_ReadInteger____local_1_res
+	lw   $t1, 0($t0)
+	addi $sp, $sp, -8
+	sw   $t1, 0($sp)
+
+.data
+.align 2
+root_ReadInteger____local_1_inp: .space 4
+
+.text
+	la   $t0, root_ReadInteger____local_1_inp
+	lw   $t1, 0($t0)
+	addi $sp, $sp, -8
+	sw   $t1, 0($sp)
+
+.data
+.align 2
+root_ReadInteger____local_1_sign: .space 4
+
+.text
+	la   $t0, root_ReadInteger____local_1_sign
+	lw   $t1, 0($t0)
+	addi $sp, $sp, -8
+	sw   $t1, 0($sp)
+
+.data
+.align 2
+root_ReadInteger____local_1_hex: .space 4
+
+.text
+	la   $t0, root_ReadInteger____local_1_hex
+	lw   $t1, 0($t0)
+	addi $sp, $sp, -8
+	sw   $t1, 0($sp)
+
+start_stmt_10:
+.text
+	la $t0, root_ReadInteger____local_1_hex
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 0
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_10:
+start_stmt_11:
+.text
+	la $t0, root_ReadInteger____local_1_sign
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 1
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_11:
+start_stmt_12:
+.text
+	la $t0, root_ReadInteger____local_1_res
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 0
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_12:
+start_stmt_13:
+.text				# While
+.text
+	li $t0, 1
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+lw $a0, 0($sp)
+addi $sp, $sp, 8
+beq $a0, 0, end_stmt_13
+
+start_stmt_14:
+.text
+start_stmt_15:
+start_stmt_16:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+.text
+	addi $sp, $sp, -8
+	sw   $ra, 0($sp)
+	jal root_ReadChar__
+	lw   $t8, 0($sp)
+	addi $sp, $sp, 8
+	lw   $ra, 0($sp)
+	addi $sp, $sp, 8
+
+	addi $sp, $sp, -8
+	sw   $t8, 0($sp)
+# return type is int 0
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_16:
+start_stmt_17:
+# if starts here:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 10
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	seq $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text				#If
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, end_stmt_18
+    j  start_stmt_18
+
+	start_stmt_18:
+start_stmt_20:
+.text
+start_stmt_21:
+start_stmt_22:
+.text				# break
+    j end_stmt_13
+##
+
+end_stmt_22:
+end_stmt_21:
+end_stmt_20:
+	end_stmt_18:
+end_stmt_17:
+start_stmt_23:
+# if starts here:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 43
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	sne $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 13
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	sne $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	and $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text				#If
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, end_stmt_24
+    j  start_stmt_24
+
+	start_stmt_24:
+start_stmt_26:
+.text
+start_stmt_27:
+start_stmt_28:
+# if starts here:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 45
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	seq $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text				# IfElse
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, start_stmt_30
+
+	start_stmt_29:
+start_stmt_31:
+.text
+start_stmt_32:
+start_stmt_33:
+.text
+	la $t0, root_ReadInteger____local_1_sign
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 1
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text				# Neg int
+    lw $t0, 0($sp)
+    sub $t0, $zero, $t0
+    sw $t0, 0($sp)
+##
+
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_33:
+end_stmt_32:
+end_stmt_31:
+	end_stmt_29:
+j end_stmt_30
+	start_stmt_30:
+start_stmt_34:
+.text
+start_stmt_35:
+start_stmt_36:
+# if starts here:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 120
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	seq $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 88
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	seq $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	or $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text				# IfElse
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, start_stmt_38
+
+	start_stmt_37:
+start_stmt_39:
+.text
+start_stmt_40:
+start_stmt_41:
+.text
+	la $t0, root_ReadInteger____local_1_hex
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 1
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_41:
+end_stmt_40:
+end_stmt_39:
+	end_stmt_37:
+j end_stmt_38
+	start_stmt_38:
+start_stmt_42:
+.text
+start_stmt_43:
+start_stmt_44:
+# if starts here:
+.text
+	la $t0, root_ReadInteger____local_1_hex
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text				 # Not
+    lw $t0, 0($sp)
+    addi $sp, $sp, 8
+    li $t1, 1
+    beq $t0, 0, not_45
+        li $t1, 0
+    not_45:
+        sub  $sp, $sp, 8
+        sw $t1, 0($sp)
+##
+
+.text				# IfElse
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, start_stmt_47
+
+	start_stmt_46:
+start_stmt_48:
+.text
+start_stmt_49:
+start_stmt_50:
+.text
+	la $t0, root_ReadInteger____local_1_res
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	la $t0, root_ReadInteger____local_1_res
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 10
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw   $t0, 0($sp)
+	lw   $t1, 8($sp)
+	mul  $t2, $t1, $t0
+	sw   $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	add $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	li $t0, 48
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	sub $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_50:
+end_stmt_49:
+end_stmt_48:
+	end_stmt_46:
+j end_stmt_47
+	start_stmt_47:
+start_stmt_51:
+.text
+start_stmt_52:
+start_stmt_53:
+# if starts here:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 60
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	sle $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text				# IfElse
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, start_stmt_55
+
+	start_stmt_54:
+start_stmt_56:
+.text
+start_stmt_57:
+start_stmt_58:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 48
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	sub $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_58:
+end_stmt_57:
+end_stmt_56:
+	end_stmt_54:
+j end_stmt_55
+	start_stmt_55:
+start_stmt_59:
+.text
+start_stmt_60:
+start_stmt_61:
+# if starts here:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 75
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	sle $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text				# IfElse
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, start_stmt_63
+
+	start_stmt_62:
+start_stmt_64:
+.text
+start_stmt_65:
+start_stmt_66:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 65
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	sub $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	li $t0, 10
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	add $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_66:
+end_stmt_65:
+end_stmt_64:
+	end_stmt_62:
+j end_stmt_63
+	start_stmt_63:
+start_stmt_67:
+.text
+start_stmt_68:
+start_stmt_69:
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 97
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	sub $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	li $t0, 10
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	add $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_69:
+end_stmt_68:
+end_stmt_67:
+	end_stmt_63:
+end_stmt_61:
+end_stmt_60:
+end_stmt_59:
+	end_stmt_55:
+end_stmt_53:
+start_stmt_70:
+.text
+	la $t0, root_ReadInteger____local_1_res
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	la $t0, root_ReadInteger____local_1_res
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	li $t0, 16
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw   $t0, 0($sp)
+	lw   $t1, 8($sp)
+	mul  $t2, $t1, $t0
+	sw   $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	la $t0, root_ReadInteger____local_1_inp
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t1, 8($sp)
+	add $t2, $t1, $t0
+	sw $t2, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_70:
+end_stmt_52:
+end_stmt_51:
+	end_stmt_47:
+end_stmt_44:
+end_stmt_43:
+end_stmt_42:
+	end_stmt_38:
+end_stmt_36:
+end_stmt_35:
+end_stmt_34:
+	end_stmt_30:
+end_stmt_28:
+end_stmt_27:
+end_stmt_26:
+	end_stmt_24:
+end_stmt_23:
+end_stmt_15:
+end_stmt_14:
+j start_stmt_13
+end_stmt_13:
+start_stmt_71:
+.text
+	la $t0, root_ReadInteger____local_1_res
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	la $t0, root_ReadInteger____local_1_sign
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	lw   $t0, 0($sp)
+	lw   $t1, 8($sp)
+	mul  $t2, $t1, $t0
+	sw   $t2, 8($sp)
+	addi $sp, $sp, 8
+
+	lw   $t8, 0($sp)
+	addi $sp, $sp, 8
+.text
+	lw   $t0, 0($sp)
+	addi $sp, $sp, 8
+	sw   $t0, root_ReadInteger____local_1_hex
+
+.text
+	lw   $t0, 0($sp)
+	addi $sp, $sp, 8
+	sw   $t0, root_ReadInteger____local_1_sign
+
+.text
+	lw   $t0, 0($sp)
+	addi $sp, $sp, 8
+	sw   $t0, root_ReadInteger____local_1_inp
+
+.text
+	lw   $t0, 0($sp)
+	addi $sp, $sp, 8
+	sw   $t0, root_ReadInteger____local_1_res
+
+	addi $sp, $sp, -8
+	sw   $t8, 0($sp)
+	jr   $ra
+
+end_stmt_71:
+start_stmt_72:
+	lw   $t8, 0($sp)
+	addi $sp, $sp, 8
+.text
+	lw   $t0, 0($sp)
+	addi $sp, $sp, 8
+	sw   $t0, root_ReadInteger____local_1_hex
+
+.text
+	lw   $t0, 0($sp)
+	addi $sp, $sp, 8
+	sw   $t0, root_ReadInteger____local_1_sign
+
+.text
+	lw   $t0, 0($sp)
+	addi $sp, $sp, 8
+	sw   $t0, root_ReadInteger____local_1_inp
+
+.text
+	lw   $t0, 0($sp)
+	addi $sp, $sp, 8
+	sw   $t0, root_ReadInteger____local_1_res
+
+	addi $sp, $sp, -8
+	sw   $t8, 0($sp)
+	jr   $ra
+
+end_stmt_72:
+.text
+	lw   $t1, 0($sp)
+	addi $sp, $sp, 8
+	la   $t0, root_ReadInteger____local_1_hex
+	sw   $t1, 0($t0)
+
+.text
+	lw   $t1, 0($sp)
+	addi $sp, $sp, 8
+	la   $t0, root_ReadInteger____local_1_sign
+	sw   $t1, 0($t0)
+
+.text
+	lw   $t1, 0($sp)
+	addi $sp, $sp, 8
+	la   $t0, root_ReadInteger____local_1_inp
+	sw   $t1, 0($t0)
+
+.text
+	lw   $t1, 0($sp)
+	addi $sp, $sp, 8
+	la   $t0, root_ReadInteger____local_1_res
+	sw   $t1, 0($t0)
+
+end_stmt_9:
+.data
+.align 2
+Binky_vtable: .space 4
+.text
+__init__vtable_0:
+	li $a0, 12
+	li $v0, 9
+	syscall
+	sw $v0, Binky_vtable
+	la $t0, root___class__Binky_Method1
+	sw $t0, 0($v0)
+	la $t0, root___class__Binky_Method2
+	sw $t0, 4($v0)
+	la $t0, root___class__Binky_Method3
+	sw $t0, 8($v0)
+	jr $ra
+.text
+root___class__Binky_Method1:
+.data
+.align 2
+root___class__Binky_Method1_this: .space 4
+.text
+start_stmt_73:
+.text
+	li $t0, 1
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+# Print int
+    li $v0, 1
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    syscall             #Print int
+##
+
+# Print new line
+    li $v0, 4
+    la $a0, nw
+    syscall				#Print new line
+
+##
+
+start_stmt_74:
+	jr   $ra
+
+end_stmt_74:
+end_stmt_73:
+.text
+root___class__Binky_Method2:
+.data
+.align 2
+root___class__Binky_Method2_this: .space 4
+.text
+start_stmt_75:
+start_stmt_76:
+.text
+	addi $sp, $sp, -8
+	sw $ra, 0($sp)
+	addi $sp, $sp, -8
+	sw $fp, 0($sp)
+.text
+	addi $t0, $fp, -0
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	addi $t0, $fp, -0
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text			# method call Binky Method1
+	lw $t0, 0($sp)
+	addi $sp, $sp, 8
+	lw $t0, 0($t0)
+	addi $t0, $t0, 0
+	lw $t0, 0($t0)
+	addi $fp, $sp, 0
+	jalr $t0
+.text	 # call Method1
+	addi $sp, $sp, 8
+	lw $fp, 0($sp)
+	addi $sp, $sp, 8
+	lw $ra, 0($sp)
+	addi $sp, $sp, 8
+end_stmt_76:
+.text
+	li $t0, 2
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+# Print int
+    li $v0, 1
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    syscall             #Print int
+##
+
+# Print new line
+    li $v0, 4
+    la $a0, nw
+    syscall				#Print new line
+
+##
+
+start_stmt_77:
+.text
+	addi $sp, $sp, -8
+	sw $ra, 0($sp)
+	addi $sp, $sp, -8
+	sw $fp, 0($sp)
+.text
+	addi $t0, $fp, -0
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	addi $t0, $fp, -0
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text			# method call Binky Method1
+	lw $t0, 0($sp)
+	addi $sp, $sp, 8
+	lw $t0, 0($t0)
+	addi $t0, $t0, 0
+	lw $t0, 0($t0)
+	addi $fp, $sp, 0
+	jalr $t0
+.text	 # call Method1
+	addi $sp, $sp, 8
+	lw $fp, 0($sp)
+	addi $sp, $sp, 8
+	lw $ra, 0($sp)
+	addi $sp, $sp, 8
+end_stmt_77:
+start_stmt_78:
+	jr   $ra
+
+end_stmt_78:
+end_stmt_75:
+.text
+root___class__Binky_Method3:
+.data
+.align 2
+root___class__Binky_Method3_this: .space 4
+.data
+.align 2
+root___class__Binky_Method3_b: .space 4
+.text
+start_stmt_79:
+start_stmt_80:
+.text
+	addi $sp, $sp, -8
+	sw $ra, 0($sp)
+	addi $sp, $sp, -8
+	sw $fp, 0($sp)
+.text
+	addi $t0, $fp, -8
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	addi $t0, $fp, -8
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text			# method call Binky Method1
+	lw $t0, 0($sp)
+	addi $sp, $sp, 8
+	lw $t0, 0($t0)
+	addi $t0, $t0, 0
+	lw $t0, 0($t0)
+	addi $fp, $sp, 0
+	jalr $t0
+.text	 # call Method1
+	addi $sp, $sp, 8
+	lw $fp, 0($sp)
+	addi $sp, $sp, 8
+	lw $ra, 0($sp)
+	addi $sp, $sp, 8
+end_stmt_80:
+.text
+	li $t0, 2
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+# Print int
+    li $v0, 1
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    syscall             #Print int
+##
+
+# Print new line
+    li $v0, 4
+    la $a0, nw
+    syscall				#Print new line
+
+##
+
+start_stmt_81:
+.text
+	addi $sp, $sp, -8
+	sw $ra, 0($sp)
+	addi $sp, $sp, -8
+	sw $fp, 0($sp)
+.text
+	addi $t0, $fp, -0
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	addi $t0, $fp, -0
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text			# method call Binky Method2
+	lw $t0, 0($sp)
+	addi $sp, $sp, 8
+	lw $t0, 0($t0)
+	addi $t0, $t0, 4
+	lw $t0, 0($t0)
+	addi $fp, $sp, 0
+	jalr $t0
+.text	 # call Method2
+	addi $sp, $sp, 8
+	lw $fp, 0($sp)
+	addi $sp, $sp, 8
+	lw $ra, 0($sp)
+	addi $sp, $sp, 8
+end_stmt_81:
+start_stmt_82:
+	jr   $ra
+
+end_stmt_82:
+end_stmt_79:
+.text
+__strcmp__:
+	lb $t0, 0($a0)
+	lb $t1, 0($a1)
+	bne $t0, $t1, __NE__
+	bne $t0, $zero, __cont__
+	li $v0, 1
+	jr $ra
+__cont__:
+	addi $a0, $a0, 1
+	addi $a1, $a1, 1
+	j __strcmp__
+__NE__:
+	li $v0, 0
+	jr $ra
+
+.data
+.align 2
+	true: .asciiz "true"
+	false: .asciiz "false"
+	pconst10000: .double 10000.0
+	nw: .asciiz "\n"
+	sign_double: .asciiz "-"
+	__const_0_5__: .double 0.5
+.text
+root_ReadChar__:
+.text
+start_rstmt_65:
+start_rstmt_66:
+.text
+
+    li $v0, 12           #read_char
+    syscall             #ReadChar
+    sub $sp, $sp, 8
+    sw $v0, 0($sp)
+
+
+
+    lw   $t8, 0($sp)
+    addi $sp, $sp, 8
+    addi $sp, $sp, -8
+    sw   $t8, 0($sp)
+    jr   $ra
+
+end_rstmt_66:
+start_rstmt_67:
+    lw   $t8, 0($sp)
+    addi $sp, $sp, 8
+    addi $sp, $sp, -8
+    sw   $t8, 0($sp)
+    jr   $ra
+
+end_rstmt_67:
+end_rstmt_65:
+
+# ITOD
+            .data
+                .align 2
+                root_itod_ival: .space 4
+            .text
+                root_itod:
+                la $t0, root_itod_ival
+                sub $sp, $sp, 8
+                sw $t0, 0($sp)
+
+                lw $t0, 0($sp)
+                lw $t0, 0($t0)
+                sw $t0, 0($sp)
+
+                mtc1.d $t0, $f0
+                cvt.d.w $f0, $f0
+
+
+                sub $sp, $sp, 8
+                s.d $f0, 0($sp)
+
+                l.d   $f30, 0($sp)
+                addi $sp, $sp, 8
+                addi $sp, $sp, 8
+                addi $sp, $sp, -8
+                s.d   $f30, 0($sp)
+                jr   $ra
+
+#DTOI
+root_dtoi_:
+.data
+.align 2
+root_dtoi__dval: .space 8
+.text
+    li $t0, 1
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)
+
+    la $t0, root_dtoi__dval
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)
+    lw $t0, 0($sp)
+    l.d $f0, 0($t0)
+
+
+    li.d $f6, 0.5 # round to nearest integer
+    add.d $f0, $f0, $f6
+
+    cvt.w.d $f0,$f0
+    mfc1.d $a0,$f0
+    sw $a0, 0($sp)
+
+
+    l.d   $f30, 0($sp)
+    addi $sp, $sp, 8
+    addi $sp, $sp, 8
+
+    addi $sp, $sp, -8
+    s.d   $f30, 0($sp)
+    jr   $ra
+
+
+# ceil
+root_ceil__:
+.data
+.align 2
+root_ceil___dval: .space 8
+.text
+    li $t0, 1
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)
+
+    la $t0, root_ceil___dval
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)
+    lw $t0, 0($sp)
+    l.d $f0, 0($t0)
+
+
+    # li.d $f6, 0.5 # round to nearest integer
+    # add.d $f0, $f0, $f6
+
+    cvt.w.d $f0,$f0
+    mfc1.d $a0,$f0
+    sw $a0, 0($sp)
+
+
+    l.d   $f30, 0($sp)
+    addi $sp, $sp, 8
+    addi $sp, $sp, 8
+
+    addi $sp, $sp, -8
+    s.d   $f30, 0($sp)
+    jr   $ra
+
+
+.text
+root_itob:
+.data
+.align 2
+    root_itob_ival: .space 4
+.text
+    la $t0, root_itob_ival
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)
+    lw $t0, 0($sp)
+    lw $t0, 0($t0)
+    sw $t0, 0($sp)
+    li $t0, 0
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    sne $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8
+    l.d   $f30, 0($sp)
+    addi $sp, $sp, 8
+    addi $sp, $sp, -8
+    s.d   $f30, 0($sp)
+    jr   $ra
+
+.text
+root_btoi:
+.data
+.align 2
+root_btoi_bval: .space 4
+.text
+start_btoi_stmt_1:
+start_btoi_stmt_2:
+# if starts here:
+.text
+    la $t0, root_btoi_bval
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)
+    lw $t0, 0($sp)
+    lw $t0, 0($t0)
+    sw $t0, 0($sp)
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, end_btoi_stmt_3
+    j  start_btoi_stmt_3
+start_btoi_stmt_3:
+start_btoi_stmt_4:
+start_btoi_stmt_5:
+    li $t0, 1
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)
+
+    l.d   $f30, 0($sp)
+    addi $sp, $sp, 8
+    addi $sp, $sp, -8
+    s.d   $f30, 0($sp)
+    jr   $ra
+end_btoi_stmt_5:
+end_btoi_stmt_4:
+end_btoi_stmt_3:
+end_btoi_stmt_2:
+start_btoi_stmt_6:
+.text
+    li $t0, 0
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)
+
+    l.d   $f30, 0($sp)
+    addi $sp, $sp, 8
+    addi $sp, $sp, -8
+    s.d   $f30, 0($sp)
+    jr   $ra
+
+end_btoi_stmt_6:
+end_btoi_stmt_1:
+
+.text
+main:
+	jal __init__vtable_0
+	la	$ra,__end__
+.text
+start_stmt_83:
+.data
+.align 2
+root_main__local_18_b: .space 4
+
+.text
+	la   $t0, root_main__local_18_b
+	lw   $t1, 0($t0)
+	addi $sp, $sp, -8
+	sw   $t1, 0($sp)
+
+.data
+.align 2
+root_main__local_18_c: .space 4
+
+.text
+	la   $t0, root_main__local_18_c
+	lw   $t1, 0($t0)
+	addi $sp, $sp, -8
+	sw   $t1, 0($sp)
+
+start_stmt_84:
+.text
+	la $t0, root_main__local_18_b
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	li $a0, 8
+	li $v0, 9
+	syscall
+	lw $t0, Binky_vtable
+	sw $t0, 0($v0)
+	addi $sp, $sp, -8
+	sw $v0, 0($sp)
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_84:
+start_stmt_85:
+.text
+	la $t0, root_main__local_18_c
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	li $a0, 8
+	li $v0, 9
+	syscall
+	lw $t0, Binky_vtable
+	sw $t0, 0($v0)
+	addi $sp, $sp, -8
+	sw $v0, 0($sp)
+.text
+	lw $t0, 8($sp)
+	lw $t1, 0($sp)
+	sw $t1, 0($t0)
+	sw $t1, 8($sp)
+	addi $sp, $sp, 8
+
+.text
+	addi	$sp, $sp, 8
+
+end_stmt_85:
+start_stmt_86:
+.text
+	addi $sp, $sp, -8
+	sw $ra, 0($sp)
+	addi $sp, $sp, -8
+	sw $fp, 0($sp)
+.text
+	la $t0, root_main__local_18_b
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	la $t0, root_main__local_18_c
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text
+	la $t0, root_main__local_18_b
+	sub $sp, $sp, 8
+	sw $t0, 0($sp)
+
+.text
+	lw $t0, 0($sp)
+	lw $t0, 0($t0)
+	sw $t0, 0($sp)
+
+.text			# method call Binky Method3
+	lw $t0, 0($sp)
+	addi $sp, $sp, 8
+	lw $t0, 0($t0)
+	addi $t0, $t0, 8
+	lw $t0, 0($t0)
+	addi $fp, $sp, 8
+	jalr $t0
+.text	 # call Method3
+	addi $sp, $sp, 16
+	lw $fp, 0($sp)
+	addi $sp, $sp, 8
+	lw $ra, 0($sp)
+	addi $sp, $sp, 8
+end_stmt_86:
+.text
+	lw   $t1, 0($sp)
+	addi $sp, $sp, 8
+	la   $t0, root_main__local_18_c
+	sw   $t1, 0($t0)
+
+.text
+	lw   $t1, 0($sp)
+	addi $sp, $sp, 8
+	la   $t0, root_main__local_18_b
+	sw   $t1, 0($t0)
+
+end_stmt_83:
+.text
+__end__:
+	li $v0, 10			#exit
+	syscall
+
+
+Process finished with exit code 0

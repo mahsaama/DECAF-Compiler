@@ -61,7 +61,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             if var_type == 'string':
                 mips_code += '.data\n'
                 mips_code += '.align 2\n'
-                mips_code += self.current_scope.replace('/', '_') + '_' + variable.children[1] + ': .space ' + str(
+                mips_code += self.current_scope.replace('/', '_') + '_' + variable.children[1] + ': .space' + str(
                     default_size) + '\n'
                 mips_code += '.text\n'
                 mips_code += '\tli $a0, 256\n'
@@ -93,7 +93,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
     def function_decl(self, parse_tree):
 
-        mips_code = ' '
+        mips_code = ''
         ##### "void" IDENT "("formals")" stmt_block
         if len(parse_tree.children) == 3:
             ident = parse_tree.children[0]
@@ -245,7 +245,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
     def stmt_block(self, parse_tree):
 
-        mips_code = ' '
+        mips_code = ''
         self.current_scope += "/" + str(self.block_stmt_counter)
         self.block_stmt_counter += 1
         stmt_num = labelCounter()
@@ -416,7 +416,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
     def if_stmt(self, parse_tree):
 
-        mips_code = ' '
+        mips_code = ''
         mips_code += self.visit(parse_tree.children[0])
 
         then_label = labelCounter()
@@ -596,7 +596,6 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                 li $v0, 4
                 la $a0, nw
                 syscall\t\t\t\t#Print new line\n
-            ##
             """)
         return mips_code
 
@@ -634,19 +633,19 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes[-1]
         if t.name == 'double' and t.size == 0:
-            mips_code += """.text\n
-                \tlw $t0, 8($sp)\n
-                \tl.d $f0, 0($sp)\n
-                \ts.d $f0, 0($t0)\n
-                \ts.d $f0, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 8($sp)
+    l.d $f0, 0($sp)
+    s.d $f0, 0($t0)
+    s.d $f0, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         else:
-            mips_code += """.text\n
-                \tlw $t0, 8($sp)\n
-                \tlw $t1, 0($sp)\n
-                \tsw $t1, 0($t0)\n
-                \tsw $t1, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 8($sp)
+    lw $t1, 0($sp)
+    sw $t1, 0($t0)
+    sw $t1, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         self.expressionTypes.pop()
         return mips_code
 
@@ -654,12 +653,12 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         self.expressionTypes.pop()
         self.expressionTypes.pop()
-        mips_code += """.text\n
-            \tlw $t0, 0($sp)\n
-            \tlw $t1, 8($sp)\n
-            \tor $t2, $t1, $t0\n
-            \tsw $t2, 8($sp)\n
-            \taddi $sp, $sp, 8\n\n"""
+        mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    or $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         self.expressionTypes.append(Type('bool'))
         return mips_code
 
@@ -667,12 +666,12 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         self.expressionTypes.pop()
         self.expressionTypes.pop()
-        mips_code += """.text\n
-            \tlw $t0, 0($sp)\n
-            \tlw $t1, 8($sp)\n
-            \tand $t2, $t1, $t0\n
-            \tsw $t2, 8($sp)\n
-            \taddi $sp, $sp, 8\n\n"""
+        mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    and $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         self.expressionTypes.append(Type('bool'))
         return mips_code
 
@@ -681,41 +680,41 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         t = self.expressionTypes.pop()
         if t.name == 'double' and t.size == 0:
             c = labelCounter()
-            mips_code += """.text\n
-                \tli $t0, 0\n
-                \tl.d $f0, 0($sp)\n
-                \tl.d $f2, 8($sp)\n
-                \tc.eq.d $f0, $f2\n
-                \tbc1f __eq.d__{}\n
-                \tli $t0, 1\n'
-                __eq.d__{}:\tsw $t0, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n""".format(c, c)
+            mips_code += """.text
+    li $t0, 0
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    c.eq.d $f0, $f2
+    bc1f __eq.d__{}
+    li $t0, 1
+    __eq.d__{}:\tsw $t0, 8($sp)
+    addi $sp, $sp, 8\n\n""".format(c, c)
         elif t.name == 'string' and t.size == 0:
-            mips_code += """.text\n
-                \tsw $t0, -8($sp)\n
-                \tsw $t1, -8($sp)\n
-                \tsw $a0, -12($sp)\n
-                \tsw $a1, -16($sp)\n
-                \tsw $v0, -20($sp)\n
-                \tsw $ra, -24($sp)\n
-                \tlw $a0, 0($sp)\n
-                \tlw $a1, 8($sp)\n
-                \tjal __strcmp__\n
-                \tsw $v0, 8($sp)\n
-                \tlw $t0, -4($sp)\n
-                \tlw $t1, -8($sp)\n
-                \tlw $a0, -12($sp)\n
-                \tlw $a1, -16($sp)\n
-                \tlw $v0, -20($sp)\n
-                \tlw $ra, -24($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    sw $t0, -8($sp)
+    sw $t1, -8($sp)
+    sw $a0, -12($sp)
+    sw $a1, -16($sp)
+    sw $v0, -20($sp)
+    sw $ra, -24($sp)
+    lw $a0, 0($sp)
+    lw $a1, 8($sp)
+    jal __strcmp__
+    sw $v0, 8($sp)
+    lw $t0, -4($sp)
+    lw $t1, -8($sp)
+    lw $a0, -12($sp)
+    lw $a1, -16($sp)
+    lw $v0, -20($sp)
+    lw $ra, -24($sp)
+    addi $sp, $sp, 8\n\n"""
         elif self:
-            mips_code += """.text\n'
-                \tlw $t0, 0($sp)\n'
-                \tlw $t1, 8($sp)\n'
-                \tseq $t2, $t1, $t0\n'
-                \tsw $t2, 8($sp)\n'
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    seq $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
         return mips_code
@@ -725,43 +724,43 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         t = self.expressionTypes.pop()
         if t.name == 'double' and t.size == 0:
             c = labelCounter()
-            mips_code += """.text\n
-                \tli $t0, 0\n
-                \tl.d $f0, 0($sp)\n
-                \tl.d $f2, 8($sp)\n
-                \tc.eq.d $f0, $f2\n
-                \tbc1t __neq.d__{}\n
-                \tli $t0, 1\n'
-                __neq.d__{}:\tsw $t0, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n""".format(c, c)
+            mips_code += """.text
+    li $t0, 0
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    c.eq.d $f0, $f2
+    bc1t __neq.d__{}
+    li $t0, 1
+     __neq.d__{}:\tsw $t0, 8($sp)
+    addi $sp, $sp, 8\n\n""".format(c, c)
         elif t.name == 'string' and t.size == 0:
-            mips_code += """.text\n
-                \tsw $t0, -8($sp)\n
-                \tsw $t1, -8($sp)\n
-                \tsw $a0, -12($sp)\n
-                \tsw $a1, -16($sp)\n
-                \tsw $v0, -20($sp)\n
-                \tsw $ra, -24($sp)\n
-                \tlw $a0, 0($sp)\n
-                \tlw $a1, 8($sp)\n
-                \tjal __strcmp__\n
-                \tli $t0, 1\n
-                \tsub $v0, $t0, $v0\n
-                \tsw $v0, 8($sp)\n
-                \tlw $t0, -4($sp)\n
-                \tlw $t1, -8($sp)\n
-                \tlw $a0, -12($sp)\n
-                \tlw $a1, -16($sp)\n
-                \tlw $v0, -20($sp)\n
-                \tlw $ra, -24($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    sw $t0, -8($sp)
+    sw $t1, -8($sp)
+    sw $a0, -12($sp)
+    sw $a1, -16($sp)
+    sw $v0, -20($sp)
+    sw $ra, -24($sp)
+    lw $a0, 0($sp)
+    lw $a1, 8($sp)
+    jal __strcmp__
+    li $t0, 1
+    sub $v0, $t0, $v0
+    sw $v0, 8($sp)
+    lw $t0, -4($sp)
+    lw $t1, -8($sp)
+    lw $a0, -12($sp)
+    lw $a1, -16($sp)
+    lw $v0, -20($sp)
+    lw $ra, -24($sp)
+    addi $sp, $sp, 8\n\n"""
         elif self:
-            mips_code += """.text\n'
-                \tlw $t0, 0($sp)\n'
-                \tlw $t1, 8($sp)\n'
-                \tsne $t2, $t1, $t0\n'
-                \tsw $t2, 8($sp)\n'
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    sne $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
         return mips_code
@@ -770,23 +769,23 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text\n
-                \tlw $t0, 0($sp)\n
-                \tlw $t1, 8($sp)\n
-                \tslt $t2, $t1, $t0\n
-                \tsw $t2, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    slt $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         elif t.name == 'double':
             c = labelCounter()
-            mips_code += """.text\n
-                \tli $t0, 0\n
-                \tl.d $f0, 0($sp)\n
-                \tl.d $f2, 8($sp)\n
-                \tc.lt.d $f2, $f0\n
-                \tbc1f __lt.d__{}\n
-                \tli $t0, 1\n
-                __lt.d__{}:\tsw $t0, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n""".format(c, c)
+            mips_code += """.text
+    li $t0, 0
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    c.lt.d $f2, $f0
+    bc1f __lt.d__{}
+    li $t0, 1
+    __lt.d__{}:\tsw $t0, 8($sp)
+    addi $sp, $sp, 8\n\n""".format(c, c)
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
         return mips_code
@@ -795,23 +794,23 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text\n
-                \tlw $t0, 0($sp)\n
-                \tlw $t1, 8($sp)\n
-                \tsle $t2, $t1, $t0\n
-                \tsw $t2, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    sle $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         elif t.name == 'double':
             c = labelCounter()
-            mips_code += """.text\n
-                \tli $t0, 0\n
-                \tl.d $f0, 0($sp)\n
-                \tl.d $f2, 8($sp)\n
-                \tc.le.d $f2, $f0\n
-                \tbc1f __lte.d__{}\n
-                \tli $t0, 1\n
-                __lte.d__{}:\tsw $t0, 8($sp)\n   
-                \taddi $sp, $sp, 8\n\n""".format(c, c)
+            mips_code += """.text
+    li $t0, 0
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    c.le.d $f2, $f0
+    bc1f __lte.d__{}
+    li $t0, 1
+    __lte.d__{}:\tsw $t0, 8($sp) 
+    addi $sp, $sp, 8\n\n""".format(c, c)
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
         return mips_code
@@ -820,23 +819,23 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text\n
-                \tlw $t0, 0($sp)\n
-                \tlw $t1, 8($sp)\n
-                \tsgt $t2, $t1, $t0\n
-                \tsw $t2, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    sgt $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         elif t.name == 'double':
             c = labelCounter()
-            mips_code += """.text\n
-                \tli $t0, 0\n
-                \tl.d $f0, 0($sp)\n
-                \tl.d $f2, 8($sp)\n
-                \tc.le.d $f2, $f0\n
-                \tbc1t __gt.d__{}\n
-                \tli $t0, 1\n
-                __gt.d__{}:\tsw $t0, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n""".format(c, c)
+            mips_code += """.text
+    li $t0, 0
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    c.le.d $f2, $f0
+    bc1t __gt.d__{}
+    li $t0, 1
+    __gt.d__{}:\tsw $t0, 8($sp)
+    addi $sp, $sp, 8\n\n""".format(c, c)
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
         return mips_code
@@ -845,23 +844,23 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text\n
-                        \tlw $t0, 0($sp)\n
-                        \tlw $t1, 8($sp)\n
-                        \tsge $t2, $t1, $t0\n
-                        \tsw $t2, 8($sp)\n
-                        \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    sge $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         elif t.name == 'double':
             c = labelCounter()
-            mips_code += """.text\n
-                        \tli $t0, 0\n
-                        \tl.d $f0, 0($sp)\n
-                        \tl.d $f2, 8($sp)\n
-                        \tc.lt.d $f2, $f0\n
-                        \tbc1t __gte.d__{}\n
-                        \tli $t0, 1\n
-                        __gte.d__{}:\tsw $t0, 8($sp)\n
-                        \taddi $sp, $sp, 8\n\n""".format(c, c)
+            mips_code += """.text
+    li $t0, 0
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    c.lt.d $f2, $f0
+    bc1t __gte.d__{}
+    li $t0, 1
+    __gte.d__{}:\tsw $t0, 8($sp)
+    addi $sp, $sp, 8\n\n""".format(c, c)
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
         return mips_code
@@ -870,19 +869,19 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text\n
-                \tlw $t0, 0($sp)\n
-                \tlw $t1, 8($sp)\n
-                \tadd $t2, $t1, $t0\n
-                \tsw $t2, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    add $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         elif t.name == 'double':
-            mips_code += """.text\n
-                \tl.d $f0, 0($sp)\n
-                \tl.d $f2, 8($sp)\n
-                \tadd.d $f4, $f2, $f0\n
-                \ts.d $f4, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    add.d $f4, $f2, $f0
+    s.d $f4, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         elif t.name == 'string':
             # TODO
             pass
@@ -893,68 +892,68 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text\n
-                \tlw $t0, 0($sp)\n
-                \tlw $t1, 8($sp)\n
-                \tsub $t2, $t1, $t0\n
-                \tsw $t2, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    sub $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         else:
-            mips_code += """.text\n
-                \tl.d $f0, 0($sp)\n
-                \tl.d $f2, 8($sp)\n
-                \tsub.d $f4, $f2, $f0\n
-                \ts.d $f4, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    sub.d $f4, $f2, $f0
+    s.d $f4, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         return mips_code
 
     def mul(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text\n
-                \tlw   $t0, 0($sp)\n
-                \tlw   $t1, 8($sp)\n
-                \tmul  $t2, $t1, $t0\n
-                \tsw   $t2, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw   $t0, 0($sp)
+    lw   $t1, 8($sp)
+    mul  $t2, $t1, $t0
+    sw   $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         elif t.name == 'double':
-            mips_code += """.text\n
-                \tl.d      $f0, 0($sp)\n
-                \tl.d      $f2, 8($sp)\n
-                \tmul.d    $f4, $f2, $f0\n
-                \ts.d      $f4, 8($sp)\n
-                \taddi     $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    l.d   $f0, 0($sp)
+    l.d   $f2, 8($sp)
+    mul.d $f4, $f2, $f0
+    s.d   $f4, 8($sp)
+    addi  $sp, $sp, 8\n\n"""
         return mips_code
 
     def div(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text\n
-                \tlw $t0, 0($sp)\n
-                \tlw $t1, 8($sp)\n
-                \tdiv $t2, $t1, $t0\n
-                \tsw $t2, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    div $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         elif t.name == 'double':
-            mips_code += """.text\n
-                \tl.d $f0, 0($sp)\n
-                \tl.d $f2, 8($sp)\n
-                \tdiv.d $f4, $f2, $f0\n
-                \ts.d $f4, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    div.d $f4, $f2, $f0
+    s.d $f4, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         return mips_code
 
     def mod(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
-        mips_code += """.text\n
-            \tlw $t0, 0($sp)\n
-            \tlw $t1, 8($sp)\n
-            \tdiv $t1, $t0\n
-            \tmfhi $t2\n
-            \tsw $t2, 8($sp)\n
-            \taddi $sp, $sp, 8\n"""
+        mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    div $t1, $t0
+    mfhi $t2
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         self.expressionTypes.pop()
         return mips_code
 
@@ -964,19 +963,19 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code += ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text\n
-                \tlw $t0, 0($sp)\n
-                \tlw $t1, 8($sp)\n
-                \tsub $t2, $t1, $t0\n
-                \tsw $t2, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t1, 8($sp)
+    sub $t2, $t1, $t0
+    sw $t2, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         else:
-            mips_code += """.text\n
-            \tl.d $f0, 0($sp)\n
-            \tl.d $f2, 8($sp)\n
-            \tsub.d $f4, $f2, $f0\n
-            \ts.d $f4, 8($sp)\n
-            \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    l.d $f0, 0($sp)
+    l.d $f2, 8($sp)
+    sub.d $f4, $f2, $f0
+    s.d $f4, 8($sp)
+    addi $sp, $sp, 8\n\n"""
 
         return mips_code
 
@@ -1007,8 +1006,8 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code += make_indentation(
             """
              .text\t\t\t\t # Read Integer
-                 li $v0, 12           #read_char
-                 syscall             #ReadChar
+                 li $v0, 12
+                 syscall             
                  sub $sp, $sp, 8
                  sw $v0, 0($sp)
              ##
@@ -1040,53 +1039,21 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''
         mips_code += make_indentation(
             """
-       .text\t\t\t\t # Read Line
-           li $a0, 256         #Maximum string length
-           li $v0, 9           #sbrk
+       .text\t\t\t\t    # Read Line
+           li $a0, 256 
+           li $v0, 9        
            syscall
            sub $sp, $sp, 8
            sw $v0, 0($sp)
            move $a0, $v0
-           li $a1, 256         #Maximum string length (incl. null)
-           li $v0, 8           #read_string
-           syscall             #ReadLine()
+           li $a1, 256       
+           li $v0, 8        
+           syscall    
            
-           lw $a0, 0($sp)      #Replace \\n to \\r(?)
-           lb $t1, nw
-           
-           # li $v0, 1
-           # addi $a0, $t1, 0
-           # syscall
-           
-           # li $v0, 10
-           # syscall
-           
-           
+           lw $a0, 0($sp)     
+
            read_{label_id}:
                lb $t0, 0($a0)
-               
-               # addi $a3, $a0, 0
-               # 
-               # li $a0, '$'
-               # li $v0, 11
-               # syscall
-               # 
-               # 
-               # addi $a0, $t0, 0
-               # li $v0, 1
-               # syscall
-               # 
-               # li $a0, ' '
-               # li $v0, 11
-               # syscall
-               # 
-               # li $a0, '$'
-               # li $v0, 11
-               # syscall
-               # 
-               # 
-               # addi $a0, 0
-               # addi $a0, $a3, 0
                beq $t0, 0, e_read_{label_id}
                bne $t0, 10, ten_{ten}
                li $t2, 0
@@ -1098,20 +1065,10 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                sb $t2, 0($a0)
                thirt_{thirt}:
                
-               
                addi $a0, $a0, 1
                j read_{label_id}
            e_read_{label_id}:
-               # # lb $t2, 1($a0)
-               # li $t2, 0
-               # sb $t2, -1($a0)
-           
-           # li $v0, 10
-           # lw $a0, 0($sp)
-           # syscall
-       ##
        """.format(label_id=labelCounter(), ten=labelCounter(), thirt=labelCounter()))
-
         self.expressionTypes.append(Type('string'))
         return mips_code
 
@@ -1120,14 +1077,14 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         class_obj = class_type_objects[class_table[class_name]]
         size = 8 + len(class_obj.variables) * 8
         self.expressionTypes.append(Type(name=class_name))
-        mips_code = """.text\n
-            \tli $a0, {}\n
-            \tli $v0, 9\n
-            \tsyscall\n
-            \tlw $t0, {}\n
-            \tsw $t0, 0($v0)\n
-            \taddi $sp, $sp, -8\n
-            \tsw $v0, 0($sp)\n""".format(size, class_name + '_vtable')
+        mips_code = """.text
+    li $a0, {}
+    li $v0, 9
+    syscall
+    lw $t0, {}
+    sw $t0, 0($v0)
+    addi $sp, $sp, -8
+    sw $v0, 0($sp)\n""".format(size, class_name + '_vtable')
         return mips_code
 
     def new_array(self, parse_tree):
@@ -1163,15 +1120,15 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes[-1]
         if t.name == 'double' and t.size == 0:
-            mips_code += """.text\n
-                \tlw $t0, 0($sp)\n
-                \tl.d $f0, 0($t0)\n
-                \ts.d $f0, 0($sp)\n\n"""
+            mips_code += '.text\n'
+            mips_code += '\tlw $t0, 0($sp)\n'
+            mips_code += '\tl.d $f0, 0($t0)\n'
+            mips_code += '\ts.d $f0, 0($sp)\n\n'
         else:
-            mips_code += """.text\n
-                \tlw $t0, 0($sp)\n
-                \tlw $t0, 0($t0)\n
-                \tsw $t0, 0($sp)\n\n"""
+            mips_code += '.text\n'
+            mips_code += '\tlw $t0, 0($sp)\n'
+            mips_code += '\tlw $t0, 0($t0)\n'
+            mips_code += '\tsw $t0, 0($sp)\n\n'
         return mips_code
 
     def ident_l_value(self, parse_tree):
@@ -1191,28 +1148,28 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                 while function_name[-1] != '_local':
                     function_name.pop()
                 function_name.pop()
-                mips_code = """.text\n
-                    \tlw $t0, 0($fp)\n
-                    \taddi $t1, $t0, {}\n
-                    \tsub $sp, $sp, 8\n
-                    \tsw $t1, 0($sp)\n""".format(index * 8 + 8)
+                mips_code = """.text
+    lw $t0, 0($fp)
+    addi $t1, $t0, {}
+    sub $sp, $sp, 8
+    sw $t1, 0($sp)\n\n""".format(index * 8 + 8)
                 self.expressionTypes.append(deepcopy(classObject.find_var_type(name)))
                 return mips_code
         if len(scope.split('/')) == 3 and '__class__' in scope.split('/')[1]:
             class_name = scope.split('/')[1][9:]
             function = class_type_objects[class_table[class_name]].find_function(scope.split('/')[-1])
             formal_type, index = function[0].find_formal(name)
-            mips_code = """.text\n
-                \taddi $t0, $fp, -{}\n
-                \tsub $sp, $sp, 8\n
-                \tsw $t0, 0($sp)\n""".format(index * 8)
+            mips_code = """.text
+    addi $t0, $fp, -{}
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)\n""".format(index * 8)
             self.expressionTypes.append(deepcopy(formal_type[1]))
             return mips_code
         label_name = scope.replace('/', '_') + '_' + name
-        mips_code = """.text\n
-            \tla $t0, {}\n
-            \tsub $sp, $sp, 8\n
-            \tsw $t0, 0($sp)\n\n""".format(label_name)
+        mips_code = """.text
+    la $t0, {}
+    sub $sp, $sp, 8
+    sw $t0, 0($sp)\n\n""".format(label_name)
         t = st_objects[symbol_table[scope, name]].type
         self.expressionTypes.append(deepcopy(t))
         return mips_code
@@ -1220,13 +1177,11 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     def mem_access_l_value(self, parse_tree):
         mips_code = self.visit(parse_tree.children[0])
         id = parse_tree.children[1].value
-        mips_code += """.text\n
-            \tlw $t0, 0($sp)\n"""
+        mips_code += """.text\n\tlw $t0, 0($sp)\n"""
         class_type = self.expressionTypes[-1]
         index = class_type_objects[class_table[class_type.name]].find_var_index(id)
         t = class_type_objects[class_table[class_type.name]].find_var_type(id)
-        mips_code += """\taddi $t1, $t0, {}\n
-            \tsw $t1, 0($sp)\n""".format((1 + index) * 8)
+        mips_code += """\taddi $t1, $t0, {}\n\tsw $t1, 0($sp)\n""".format((1 + index) * 8)
         self.expressionTypes.pop()
         self.expressionTypes.append(t)
         return mips_code
@@ -1236,23 +1191,23 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         self.expressionTypes.pop()
         t = self.expressionTypes[-1]
         if t.name == 'double' and t.size == 1:
-            mips_code += """.text\n
-                \tlw $t7, 8($sp)\n
-                \tlw $t0, 0($sp)\n
-                \tli $t1, 8\n
-                \tmul $t0, $t0, $t1\n
-                \tadd $t1, $t0, $t7\n
-                \tsw $t1, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t7, 8($sp)
+    lw $t0, 0($sp)
+    li $t1, 8
+    mul $t0, $t0, $t1
+    add $t1, $t0, $t7
+    sw $t1, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         else:
-            mips_code += """.text\n
-                \tlw $t7, 8($sp)\n
-                \tlw $t0, 0($sp)\n
-                \tli $t1, 4\n
-                \tmul $t0, $t0, $t1\n
-                \tadd $t1, $t0, $t7\n
-                \tsw $t1, 8($sp)\n
-                \taddi $sp, $sp, 8\n\n"""
+            mips_code += """.text
+    lw $t7, 8($sp)
+    lw $t0, 0($sp)
+    li $t1, 4
+    mul $t0, $t0, $t1
+    add $t1, $t0, $t7
+    sw $t1, 8($sp)
+    addi $sp, $sp, 8\n\n"""
         self.expressionTypes[-1].size -= 1
         return mips_code
 
@@ -1262,21 +1217,20 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code =''
         mips_code += self.visit(parse_tree.children[0])
         if self.expressionTypes[-1].size > 0:
-            mips_code += """
-            .text\n
-            \tlw $t0, 0($sp)\n
-            \tlw $t0, -8($t0)\n
-            \tsw $t0, 0($sp)\n\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t0, -8($t0)
+    sw $t0, 0($sp)\n\n"""
 
             self.expressionTypes.pop()
             self.expressionTypes.append(Type('int'))
             return mips_code
         self.expressionTypes.pop()
-        mips_code = """.text\n
-        \taddi $sp, $sp, -8\n
-        \tsw $ra, 0($sp)\n
-        \taddi $sp, $sp, -8\n
-        \tsw $fp, 0($sp)\n"""
+        mips_code = """.text
+    addi $sp, $sp, -8
+    sw $ra, 0($sp)
+    addi $sp, $sp, -8
+    sw $fp, 0($sp)\n\n"""
 
         mips_code += self.visit(parse_tree.children[0])
         for ch in parse_tree.children[2].children:
@@ -1292,11 +1246,9 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
 
         mips_code += '.text\t\t\t# method call {} {}\n'.format(class_type.name, function_name)
-        mips_code+="""
-        \tlw $t0, 0($sp)\n
-        \taddi $sp, $sp, 8\n
-        \tlw $t0, 0($t0)\n"""
-
+        mips_code += '\tlw $t0, 0($sp)\n'
+        mips_code += '\taddi $sp, $sp, 8\n'
+        mips_code += '\tlw $t0, 0($t0)\n'
         mips_code += '\taddi $t0, $t0, {}\n'.format(4 * idx[1])
         mips_code += '\tlw $t0, 0($t0)\n'
         mips_code += '\taddi $fp, $sp, {}\n'.format(8 * len(parse_tree.children[2].children))
@@ -1308,9 +1260,9 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         function = class_type_objects[class_table[class_type.name]].functions[idx[1]]
 
         if function.return_type.name == 'double' and function.return_type.size == 0:
-            mips_code += """
-            \tl.d   $f30, 0($sp)\n
-            \taddi $sp, $sp, 8\n"""
+            mips_code += '\tl.d   $f30, 0($sp)\n'
+            mips_code += '\taddi $sp, $sp, 8\n'
+
 
         elif function.return_type.name != 'void':
             mips_code += '\tlw   $t8, 0($sp)\n'
@@ -1318,11 +1270,10 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code += '\taddi $sp, $sp, {}\n'.format(len(parse_tree.children[2].children) * 8 + 8)
         for i in range(len(parse_tree.children[2].children)):
             self.expressionTypes.pop()
-        mips_code += """
-        \tlw $fp, 0($sp)\n
-         \taddi $sp, $sp, 8\n
-        \tlw $ra, 0($sp)\n
-        \taddi $sp, $sp, 8\n"""
+        mips_code += '\tlw $fp, 0($sp)\n'
+        mips_code += '\taddi $sp, $sp, 8\n'
+        mips_code += '\tlw $ra, 0($sp)\n'
+        mips_code += '\taddi $sp, $sp, 8\n\n'
 
         if function.return_type.name == 'double' and function.return_type.size == 0:
             mips_code += """
@@ -1347,11 +1298,10 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         if len(parse_tree.children) == 3:
             code = self.visit(parse_tree.children[0])
             if self.expressionTypes[-1].size > 0:
-                mips_code += """
-                .text\n
-                \tlw $t0, 0($sp)\n'
-                \tlw $t0, -8($t0)\n'
-                \tsw $t0, 0($sp)\n\n"""
+                mips_code += """.text
+    lw $t0, 0($sp)
+    lw $t0, -8($t0)
+    sw $t0, 0($sp)\n\n"""
 
                 self.expressionTypes.pop()
                 self.expressionTypes.append(Type('int'))
@@ -1404,14 +1354,12 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             formal_type = formal[1]
             if formal_type.name == 'double' and formal_type.size == 0:
                 mips_code += '\tl.d  $f0, {}\n'.format(formal_name)
-                mips_code += """
-                \taddi $sp, $sp, -8\n
-                \ts.d  $f0, 0($sp)\n\n"""
+                mips_code += """addi $sp, $sp, -8
+    s.d  $f0, 0($sp)\n\n"""
             else:
                 mips_code += '\tlw   $t1, {}\n'.format(formal_name)
-                mips_code += """
-                \taddi $sp, $sp, -8\n
-                \tsw   $t1, 0($sp)\n\n"""
+                mips_code += """addi $sp, $sp, -8
+    sw   $t1, 0($sp)\n\n"""
 
         # set actual parameters to formal parameters
 
@@ -1471,23 +1419,21 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             class_type = self.expressionTypes[-1]
             self.expressionTypes.pop()
             index = class_type_objects[class_table[class_type.name]].find_function_index(func_name)
-            mips_code += """.text\n
-            \tlw $t0, 0($sp)\n
-            \taddi $sp, $sp, 8\n
-            \tlw $t0, 0($t0)\n"""
+            mips_code += """.text
+    lw $t0, 0($sp)
+    addi $sp, $sp, 8
+    lw $t0, 0($t0)\n"""
 
             mips_code += '\taddi $t0, $t0, {}\n'.format(4 * index)
-            mips_code += """ 
-            \tlw $t0, 0($t0)\n
-            \tjalr $t0\n"""
+            mips_code += """ lw $t0, 0($t0)
+    jalr $t0\n"""
         else:
             label_name = function.exact_name
             mips_code += '\tjal {}\n'.format(label_name.replace('/', '_'))
 
         if function.return_type.name == 'double' and function.return_type.size == 0:
-            mips_code += """
-             \tl.d   $f30, 0($sp)\n
-             \taddi $sp, $sp, 8\n"""
+            mips_code += """l.d   $f30, 0($sp)
+    addi $sp, $sp, 8\n"""
 
         elif function.return_type.name != 'void':
             mips_code += '\tlw   $t8, 0($sp)\n'
@@ -1509,9 +1455,8 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             formal_name = (exact_name + "/" + formal[0]).replace("/", "_")
             formal_type = formal[1]
             if formal_type.name == 'double' and formal_type.size == 0:
-                mips_code += """
-                \tl.d  $f0, 0($sp)\n
-                \taddi $sp, $sp, 8\n"""
+                mips_code += """l.d  $f0, 0($sp)
+    addi $sp, $sp, 8\n"""
                 mips_code += '\ts.d  $f0, {}\n\n'.format(formal_name)
             else:
                 mips_code += '\tlw   $t0, 0($sp)\n'
@@ -1582,9 +1527,9 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         return mips_code
 
     def null(self):
-        mips_code = """.text\n
-            \tsub $sp, $sp, 8\n
-            \tsw $zero, 0($sp)\n\n"""
+        mips_code = """.text
+    sub $sp, $sp, 8
+    sw $zero, 0($sp)\n\n"""
         self.expressionTypes.append(Type('null'))
         return mips_code
 
