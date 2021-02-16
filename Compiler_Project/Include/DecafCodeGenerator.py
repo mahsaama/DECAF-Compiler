@@ -1417,15 +1417,15 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
         # push formal parameter
         for formal in function.formals:
-            exact_name = function_scope
+            label = function_scope
             if parse_tree._meta[1]:
                 tmp = self.visit(parse_tree._meta[1])
                 class_type = self.expressionTypes[-1]
                 self.expressionTypes.pop()
                 for funct in class_type_objects[class_table[class_type.name]].functions:
                     if funct.name == parse_tree:
-                        exact_name = funct.name
-            formal_name = (exact_name + "/" + formal[0]).replace("/", "_")
+                        label = funct.label
+            formal_name = (label + "/" + formal[0]).replace("/", "_")
             formal_type = formal[1]
             if formal_type.name == 'double' and formal_type.size == 0:
                 mips_code += '\tl.d  $f0, {}\n'.format(formal_name)
@@ -1439,15 +1439,15 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         # set actual parameters to formal parameters
 
         if parse_tree._meta[1]:
-            exact_name = function_scope
+            label = function_scope
             if parse_tree._meta[1]:
                 tmp = self.visit(parse_tree._meta[1])
                 class_type = self.expressionTypes[-1]
                 self.expressionTypes.pop()
                 for funct in class_type_objects[class_table[class_type.name]].functions:
                     if funct.name == func_name:
-                        exact_name = funct.name
-            formal_name = (exact_name + "/" + function.formals[0][0]).replace("/", "_")
+                        label = funct.label
+            formal_name = (label + "/" + function.formals[0][0]).replace("/", "_")
             # todo is it really a pointer or it's just a name?
             expr = parse_tree._meta[1]
             mips_code += self.visit(expr)
@@ -1461,16 +1461,16 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             actual_counter = 0
 
         for expr in parse_tree.children:
-            exact_name = function_scope
+            label = function_scope
             if parse_tree._meta[1]:
                 tmp = self.visit(parse_tree._meta[1])
                 class_type = self.expressionTypes[-1]
                 self.expressionTypes.pop()
                 for funct in class_type_objects[class_table[class_type.name]].functions:
                     if funct.name == func_name:
-                        exact_name = funct.name
+                        label = funct.label
             mips_code += self.visit(expr)
-            formal_name = (exact_name + "/" + function.formals[actual_counter][0]).replace("/", "_")
+            formal_name = (label + "/" + function.formals[actual_counter][0]).replace("/", "_")
             mips_code += '.text\n'
             formal_type = function.formals[actual_counter][1]
             if formal_type.name == 'double' and formal_type.size == 0:
@@ -1519,15 +1519,15 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
         # pop formal parameters
         for formal in reversed(function.formals):
-            exact_name = function_scope
+            label = function_scope
             if parse_tree._meta[1]:
                 tmp = self.visit(parse_tree._meta[1])
                 class_type = self.expressionTypes[-1]
                 self.expressionTypes.pop()
                 for funct in class_type_objects[class_table[class_type.name]].functions:
                     if funct.name == func_name:
-                        exact_name = funct.name
-            formal_name = (exact_name + "/" + formal[0]).replace("/", "_")
+                        label = funct.label
+            formal_name = (label + "/" + formal[0]).replace("/", "_")
             formal_type = formal[1]
             if formal_type.name == 'double' and formal_type.size == 0:
                 mips_code += 'l.d  $f0, 0($sp)\n'
