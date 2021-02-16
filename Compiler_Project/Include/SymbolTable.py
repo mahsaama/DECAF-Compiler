@@ -4,9 +4,9 @@ import lark
 from lark import Lark, Tree
 from lark.lexer import Token
 from lark.visitors import Interpreter
-from Compiler_Project.Include.function import Type, Class, Function, class_type_objects, function_objects, \
+from function import Type, Class, Function, class_type_objects, function_objects, \
     function_table, class_table
-from Compiler_Project.Include.traversal import *
+from traversal import *
 
 Grammar = """
     start : (decl)+
