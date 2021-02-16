@@ -283,7 +283,6 @@ class SymbolTable(Interpreter):
 
 
 code = """
-
 class Binky {
   void Method1() {
     Print(1);
@@ -310,7 +309,6 @@ int main() {
   c = new Binky;
   b.Method3(c);
 }
-
 """
 
 if __name__ == '__main__':

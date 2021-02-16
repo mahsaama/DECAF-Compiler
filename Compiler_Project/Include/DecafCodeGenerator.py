@@ -189,10 +189,6 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                 mips_code += '{}: .space 8\n'.format((self.current_scope + "/" + name).replace("/", "_"))
             else:
                 mips_code += '{}: .space 4\n'.format((self.current_scope + "/" + name).replace("/", "_"))
-            # if f_type.name == 'double' and f_type.size == 0:
-            #     default_size = 8
-
-            # mips_code += '{}: .space {}\n'.format((self.current_scope + "/" + name).replace("/", "_"), default_size)
 
         return mips_code
 
@@ -226,7 +222,6 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
         mips_code += '\tjr $ra\n'
 
-        # if current class extends or implements other class
         if len(parse_tree.children) > 1:
 
             if type(parse_tree.children[1]) == lark.lexer.Token:
@@ -250,9 +245,6 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                 mips_code += self.visit(ch)
                 pass
         return mips_code
-
-    def interface_decl(self, parse_tree):
-        return code
 
     def stmt_block(self, parse_tree):
 
@@ -1089,17 +1081,17 @@ __gte.d__{}:\tsw $t0, 8($sp)
 
         if (arr.children[0].type != "INT"):
             mips_code = """
-        .text
-            .globl main
-            main:
-            la $a0 , errorMsg
-            addi $v0 , $zero, 4
-            syscall
-            jr $ra
+.text
+    .globl main
+    main:
+    la $a0 , errorMsg
+    addi $v0 , $zero, 4
+    syscall
+    jr $ra
 
-            .data
-            errorMsg: .asciiz "Semantic Error"
-            """
+    .data
+    errorMsg: .asciiz "Semantic Error"
+    """
             sys.exit(mips_code)
 
         shamt = 2
