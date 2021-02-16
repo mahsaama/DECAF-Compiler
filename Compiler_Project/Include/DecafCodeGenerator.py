@@ -46,38 +46,27 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     def variable_decl(self, parse_tree):
         ### variable : [0] : type ,[1] : name
         mips_code = ''
-
         variable = parse_tree.children[0]
         variable_type = variable.children[0]
-
         default_size = 4
-
         if type(variable_type.children[0]) == lark.lexer.Token:
-
             var_type = variable_type.children[0].value
-            variable_name = variable.children[1]
-
             if var_type == 'string':
                 mips_code += '.data\n'
                 mips_code += '.align 2\n'
-                mips_code += self.current_scope.replace('/', '_') + '_' + variable.children[1] + ': .space ' + str(
-                    default_size) + '\n'
+                mips_code += self.current_scope.replace('/', '_') + '_' + variable.children[1] + ': .space ' + str(default_size) + '\n'
                 mips_code += '.text\n'
                 mips_code += '\tli $a0, 256\n'
                 mips_code += '\tli $v0, 9\n'
                 mips_code += '\tsyscall\n'
-                mips_code += '\tsw $v0, ' + self.current_scope.replace('/', '_') + '_' + variable.children[
-                    1] + '\n' + '\n'
+                mips_code += '\tsw $v0, ' + self.current_scope.replace('/', '_') + '_' + variable.children[1] + '\n' + '\n'
                 return mips_code
-
-            if var_type == 'double':
+            elif var_type == 'double':
                 default_size = 8
-
+        variable_name = variable.children[1]
         mips_code += '.data\n'
         mips_code += '.align 2\n'
-
-        mips_code += self.current_scope.replace('/', '_') + '_' + variable_name + ': .space ' + str(
-            default_size) + '\n' + '\n'
+        mips_code += self.current_scope.replace('/', '_') + '_' + variable_name + ': .space ' + str(default_size) + '\n' + '\n'
         return mips_code
 
     def type(self, parse_tree):
@@ -847,48 +836,47 @@ __gte.d__{}:\tsw $t0, 8($sp)
     add.d $f4, $f2, $f0
     s.d $f4, 8($sp)
     addi $sp, $sp, 8\n\n"""
-        #         elif t.name == 'string':
-        #             mips_code += """.text
-        #     la $a0, str1
-        #     la $a1, result
-        #     jal
-        #     strcopier
-        #     nop
-        #
-        #     la $a0, str2
-        #     or $a1, $v0, $zero
-        #     jal
-        #     strcopier
-        #     nop
-        #     j
-        #     finish
-        #     nop
-        #
-        #     strcopier:
-        #     or $t0, $a0, $zero  # Source
-        #     or $t1, $a1, $zero  # Destination
-        #
-        #     loop:
-        #     lb $t2, 0($t0)
-        #     beq $t2, $zero, end
-        #     addiu $t0, $t0, 1
-        #     sb $t2, 0($t1)
-        #     addiu $t1, $t1, 1
-        #     b
-        #     loop
-        #     nop
-        #
-        #     end:
-        #     or $v0, $t1, $zero
-        #     jr $ra
-        #     nop
-        #
-        #     finish:
-        #     j
-        #     finish
-        #     nop
-        # """
-        # TODO : concatination of 2 arrays , 2 strings
+        elif t.name == 'string':
+            mips_code += """
+.data
+string1:    .space      256             # buffer for first string
+string2:    .space      256             # buffer for second string
+string3:    .space      512             # combined output buffer
+
+.text
+main:
+    la      $a0,0($sp)
+    la      $a1,string1     
+    move    $s0,$v0 
+    la      $a0,8($sp) 
+    la      $a1,string2 
+    move    $s1,$v0      
+    la      $a0,string3
+    blt     $s0,$s1,string1_short
+    la      $a1,string1
+    jal     strcat
+    la      $a1,string2
+    jal     strcat
+string1_short:
+    # string 2 is longer -- append to output
+    la      $a1,string2
+    jal     strcat
+
+    # string 1 is shorter -- append to output
+    la      $a1,string1
+    jal     strcat
+
+strcat:
+    lb      $v0,0($a1)              # get the current char
+    beqz    $v0,strcat_done         # is char 0? if yes, done
+    sb      $v0,0($a0)              # store the current char
+    addi    $a0,$a0,1               # advance destination pointer
+    addi    $a1,$a1,1               # advance source pointer
+    j       strcat
+strcat_done:
+    sw   $a0, 8($sp)
+    addi $sp, $sp, 8\n\n
+"""
         return mips_code
 
     def sub(self, parse_tree):
@@ -1165,6 +1153,8 @@ __gte.d__{}:\tsw $t0, 8($sp)
         if len(scope.split('/')) == 3 and '__class__' in scope.split('/')[1]:
             class_name = scope.split('/')[1][9:]
             function = class_type_objects[class_table[class_name]].find_function(scope.split('/')[-1])
+            if function == -1 :
+                raise Exception
             formal_type, index = function[0].find_formal(name)
             mips_code = """.text
     addi $t0, $fp, -{}
@@ -1595,16 +1585,30 @@ return res * sign;
     ParentTree().visit(parse_tree)
     set_parents()
     Traversal().visit(parse_tree)
-    mips_code = CodeGenerator().visit(parse_tree)
-    return mips_code
+    try:
+        mips_code = CodeGenerator().visit(parse_tree)
+        return mips_code
+    except:
 
+        mips_code = """.text
+    .globl main
+    main:
+    la $a0 , errorMsg
+    addi $v0 , $zero, 4
+    syscall
+    jr $ra
+    
+    .data
+    errorMsg: .asciiz "Semantic Error"
+"""
+        return mips_code
 
 if __name__ == '__main__':
-    code = """
-    int main() {
-    
- NewArray(10.5, int);
-
-
-}"""
+#     code = """
+#     int main() {
+#
+#  NewArray(10.5, int);
+#
+#
+# }"""
     print(decafCGEN(code))

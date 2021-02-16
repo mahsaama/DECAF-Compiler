@@ -32,18 +32,7 @@ class Class:
             if func.name == name:
                 return func, counter
             counter += 1
-        mips_code = """.text
-    .globl main
-    main:
-    la $a0 , errorMsg
-    addi $v0 , $zero, 4
-    syscall
-    jr $ra
-    
-    .data
-    errorMsg: .asciiz "Semantic Error"
-"""
-        sys.exit(mips_code)
+        return -1
 
     def find_var(self, ident):
         counter = 0
