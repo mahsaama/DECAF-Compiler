@@ -1253,7 +1253,9 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     def mem_access_l_value(self, parse_tree):
         mips_code = self.visit(parse_tree.children[0])
         id = parse_tree.children[1].value
+
         mips_code += """.text\n\tlw $t0, 0($sp)\n"""
+
         class_type = self.expressionTypes[-1]
         index = class_type_objects[class_table[class_type.name]].find_var(id)
         index = index[1]
