@@ -2,6 +2,7 @@ from SymbolTable import *
 from traversal import *
 from LibFunctionCodeGenerator import primitve_inst
 from copy import deepcopy
+import sys
 
 
 def POP(scope):
@@ -1081,6 +1082,26 @@ __gte.d__{}:\tsw $t0, 8($sp)
     def new_array(self, parse_tree):
         mips_code = ''
         mips_code += ''.join(self.visit_children(parse_tree))
+
+        arr = parse_tree
+        while type(arr.children[0]) == Tree:
+            arr = arr.children[0]
+
+        if (arr.children[0].type != "INT"):
+            mips_code = """
+        .text
+            .globl main
+            main:
+            la $a0 , errorMsg
+            addi $v0 , $zero, 4
+            syscall
+            jr $ra
+
+            .data
+            errorMsg: .asciiz "Semantic Error"
+            """
+            sys.exit(mips_code)
+
         shamt = 2
         if type(parse_tree.children[1].children[0]) == lark.lexer.Token:
             if parse_tree.children[1].children[0].value == 'bool':
@@ -1591,4 +1612,11 @@ return res * sign;
 
 
 if __name__ == '__main__':
+    code = """
+    int main() {
+    
+ NewArray(10.5, int);
+
+
+}"""
     print(decafCGEN(code))
