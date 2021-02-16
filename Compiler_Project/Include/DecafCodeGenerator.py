@@ -1,6 +1,5 @@
 from SymbolTable import *
 from traversal import *
-from function import make_indentation
 from LibFunctionCodeGenerator import primitve_inst
 from copy import deepcopy
 
@@ -424,44 +423,35 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
     def if_stmt(self, parse_tree):
 
-        mips_code = ''
-        mips_code += self.visit(parse_tree.children[0])
-
+        mips_code = self.visit(parse_tree.children[0])
         then_label = labelCounter()
         else_label = labelCounter()
-
-        """
-        if (true)
-            a = b;
-        """
-
         then_mipscode = self.visit(parse_tree.children[1])
         else_mipscode = '' if len(parse_tree.children) == 2 else self.visit(parse_tree.children[2])
         if len(parse_tree.children) == 2:
-            mips_code += make_indentation(
-                """
-                .text\t\t\t\t#If
-                    lw $a0, 0($sp)
-                    addi $sp, $sp, 8
-                    beq $a0, 0, end_stmt_{then}
-                    j  start_stmt_{then}
-                """.format(then=then_label)
-            )
+            mips_code += """
+.text\t\t\t\t#If
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, end_stmt_{then}
+    j  start_stmt_{then}
+""".format(then=then_label)
             mips_code += '\tstart_stmt_{}:\n'.format(then_label)
             mips_code += then_mipscode
             mips_code += '\tend_stmt_{}:\n'.format(then_label)
         else:
-            mips_code += make_indentation("""
-                .text\t\t\t\t# IfElse
-                    lw $a0, 0($sp)
-                    addi $sp, $sp, 8
-                    beq $a0, 0, start_stmt_{els}
-                """.format(els=else_label))
+            mips_code += """
+.text\t\t\t\t# IfElse statement
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, start_stmt_{}
+""".format(else_label)
 
             mips_code += '\tstart_stmt_{}:\n'.format(then_label)
             mips_code += then_mipscode
             mips_code += '\tend_stmt_{}:\n'.format(then_label)
-            mips_code += make_indentation("j end_stmt_{els}".format(els=else_label))
+            mips_code += """j end_stmt_{}
+            """.format(else_label)
             mips_code += '\tstart_stmt_{}:\n'.format(else_label)
             mips_code += else_mipscode
             mips_code += '\tend_stmt_{}:\n'.format(else_label)
@@ -469,21 +459,19 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
     def while_stmt(self, parse_tree):
         mips_code = ''
-        # while count= parse_tree._meta
         self.loopLabels.append(parse_tree._meta)
-
-        mips_code += '.text\t\t\t\t# While\n'
-
+        mips_code += '.text\t\t\t\t# While statement\n'
         mips_code += self.visit(parse_tree.children[0])
         stmt_code = self.visit(parse_tree.children[1])
 
-        mips_code += make_indentation("""
-            lw $a0, 0($sp)
-            addi $sp, $sp, 8
-            beq $a0, 0, end_stmt_{while_end}
-        """.format(while_end=parse_tree._meta))
+        mips_code += """
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, end_stmt_{while_end}
+""".format(while_end=parse_tree._meta)
         mips_code += stmt_code
-        mips_code += make_indentation("j start_stmt_{while_start}".format(while_start=parse_tree._meta))
+        mips_code += """j start_stmt_{while_start}
+        """.format(while_start=parse_tree._meta)
 
         self.stmtLabels = self.stmtLabels[:len(self.stmtLabels)]
         self.loopLabels.pop()
@@ -491,7 +479,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
     def for_stmt(self, parse_tree):
         mips_code = ''
-        mips_code += '.text\t\t\t\t# For\n'  # todo check this comment
+        mips_code += '.text\t\t\t\t# For statement\n'
         self.loopLabels.append(parse_tree._meta)
         children = parse_tree.children
         next = ''
@@ -502,11 +490,11 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         if children[-2].data == 'assignment':
             next += self.visit(children[-2])
             next += '\taddi $sp, $sp, 8\n'
-        mips_code += make_indentation("""
-            lw $a0, 0($sp)
-            addi $sp, $sp, 8
-            beq $a0, $zero, end_stmt_{}
-        """.format(parse_tree._meta))
+        mips_code += """
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, $zero, end_stmt_{}
+""".format(parse_tree._meta)
 
         mips_code += self.visit(children[-1])
         mips_code += next
@@ -518,9 +506,10 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         return ''.join(self.visit_children(parse_tree))
 
     def break_stmt(self, parse_tree):
-        mips_code = make_indentation(""".text\t\t\t\t# break
+        mips_code = """
+.text\t\t\t\t# break
     j end_stmt_{}            
-        """.format(self.loopLabels[-1]))
+""".format(self.loopLabels[-1])
         return mips_code
 
     def continue_stmt(self, parse_tree):
@@ -534,58 +523,51 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             self.expressionTypes.pop()
             mips_code += '.text\n'
             if t.name == 'double':
-
-                mips_code += make_indentation("""
-                    l.d $f12, 0($sp)
-                    addi $sp, $sp, 8
-                    cvt.s.d $f12, $f12
-                    li $v0, 2
-                    syscall
-                """)
-
+                mips_code += """
+    l.d $f12, 0($sp)
+    addi $sp, $sp, 8
+    cvt.s.d $f12, $f12
+    li $v0, 2
+    syscall
+"""
             elif t.name == 'int':
-                mips_code += make_indentation("""
-                    # Print int
-                        li $v0, 1
-                        lw $a0, 0($sp)
-                        addi $sp, $sp, 8
-                        syscall
-                """)
-
+                mips_code += """
+# Print int
+    li $v0, 1
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    syscall
+"""
             elif t.name == 'string':
-                mips_code += make_indentation(
-                    """
-                    # Print string
-                        li $v0, 4
-                        lw $a0, 0($sp)
-                        addi $sp, $sp, 8
-                        syscall
-                    """)
+                mips_code += """
+# Print string
+    li $v0, 4
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    syscall
+"""
             elif t.name == 'bool' and t.size == 0:
-                mips_code += make_indentation(
-                    """
-                    # Print bool
-                        lw $a0, 0($sp)
-                        addi $sp, $sp, 8
-                        beq $a0, 0, zero_{cnt}
-                        li $v0, 4
-                        la $a0, true
-                        syscall
-                        j ezero_{cnt}
-                        zero_{cnt}:
-                        li $v0, 4
-                        la $a0, false
-                        syscall 
-                        ezero_{cnt}:
-                    """.format(cnt=labelCounter())
-                )
-        mips_code += make_indentation(
-            """
-            # Print new line
-                li $v0, 4
-                la $a0, nw
-                syscall\n
-            """)
+                mips_code += """
+# Print bool
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    beq $a0, 0, zero_{cnt}
+    li $v0, 4
+    la $a0, true
+    syscall
+    j ezero_{cnt}
+    zero_{cnt}:
+    li $v0, 4
+    la $a0, false
+    syscall 
+    ezero_{cnt}:
+""".format(cnt=labelCounter())
+        mips_code += """
+# Print new line
+    li $v0, 4
+    la $a0, nw
+    syscall\n
+"""
         return mips_code
 
     def expr(self, parse_tree):
@@ -720,7 +702,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     c.eq.d $f0, $f2
     bc1t __neq.d__{}
     li $t0, 1
-     __neq.d__{}:\tsw $t0, 8($sp)
+__neq.d__{}:\tsw $t0, 8($sp)
     addi $sp, $sp, 8\n\n""".format(c, c)
         elif t.name == 'string' and t.size == 0:
             mips_code += """.text
@@ -773,7 +755,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     c.lt.d $f2, $f0
     bc1f __lt.d__{}
     li $t0, 1
-    __lt.d__{}:\tsw $t0, 8($sp)
+__lt.d__{}:\tsw $t0, 8($sp)
     addi $sp, $sp, 8\n\n""".format(c, c)
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
@@ -798,7 +780,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     c.le.d $f2, $f0
     bc1f __lte.d__{}
     li $t0, 1
-    __lte.d__{}:\tsw $t0, 8($sp) 
+__lte.d__{}:\tsw $t0, 8($sp) 
     addi $sp, $sp, 8\n\n""".format(c, c)
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
@@ -823,7 +805,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     c.le.d $f2, $f0
     bc1t __gt.d__{}
     li $t0, 1
-    __gt.d__{}:\tsw $t0, 8($sp)
+__gt.d__{}:\tsw $t0, 8($sp)
     addi $sp, $sp, 8\n\n""".format(c, c)
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
@@ -848,7 +830,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     c.lt.d $f2, $f0
     bc1t __gte.d__{}
     li $t0, 1
-    __gte.d__{}:\tsw $t0, 8($sp)
+__gte.d__{}:\tsw $t0, 8($sp)
     addi $sp, $sp, 8\n\n""".format(c, c)
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))
@@ -1008,17 +990,17 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
         mips_code = ''.join(self.visit_children(parse_tree))
 
-        mips_code += make_indentation("""
-            .text\t\t\t\t # Not
-                lw $t0, 0($sp)
-                addi $sp, $sp, 8
-                li $t1, 1
-                beq $t0, 0, not_{0}
-                    li $t1, 0
-                not_{0}:
-                    sub  $sp, $sp, 8
-                    sw $t1, 0($sp)
-        """.format(labelCounter()))
+        mips_code += """
+.text\t\t\t\t # Not
+    lw $t0, 0($sp)
+    addi $sp, $sp, 8
+    li $t1, 1
+    beq $t0, 0, not_{0}
+        li $t1, 0
+    not_{0}:
+        sub  $sp, $sp, 8
+        sw $t1, 0($sp)
+""".format(labelCounter())
 
         self.expressionTypes.pop()
         self.expressionTypes.append(Type('bool'))

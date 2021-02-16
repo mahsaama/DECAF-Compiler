@@ -1,11 +1,5 @@
 import sys
-
-import lark
-from lark import Lark, Tree
-from lark.lexer import Token
-from lark.visitors import Interpreter
-from function import Type, Class, Function, class_type_objects, function_objects, \
-    function_table, class_table
+from function import Type, Function,function_objects, function_table
 from traversal import *
 
 Grammar = """
