@@ -238,7 +238,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         func_counter = 0
 
         for func in class_object.functions:
-            mips_code += '\tla $t0, {}\n\tsw $t0, {}($v0)\n'.format(func.name.replace('/', '_'), func_counter)
+            mips_code += '\tla $t0, {}\n\tsw $t0, {}($v0)\n'.format(func.label.replace('/', '_'), func_counter)
             func_counter += 4
 
         mips_code += '\tjr $ra\n'
