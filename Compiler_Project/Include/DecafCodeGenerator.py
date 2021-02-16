@@ -1,3 +1,4 @@
+import re
 from SymbolTable import *
 from traversal import *
 from LibFunctionCodeGenerator import primitve_inst
@@ -1101,6 +1102,25 @@ strcat_done:
     sub $sp, $sp, 8
     sw $v0, 0($sp)\n
 """.format(shamt=shamt)
+
+        acc = [m.start() for m in re.finditer('# Neg int', mips_code)]
+        acc1 = [m.start() for m in re.finditer('# New array ', mips_code)]
+
+        if (len(acc) != 0):
+            if (acc1[-1] - acc[-1] < 100):
+                mips_code = """
+        .text
+            .globl main
+            main:
+            la $a0 , errorMsg
+            addi $v0 , $zero, 4
+            syscall
+            jr $ra
+
+            .data
+            errorMsg: .asciiz "Semantic Error"
+            """
+                sys.exit(mips_code)
 
         self.expressionTypes.append(Type(name=self.lastType.name, size=self.lastType.size + 1))
         return mips_code
