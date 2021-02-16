@@ -60,7 +60,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             if var_type == 'string':
                 mips_code += '.data\n'
                 mips_code += '.align 2\n'
-                mips_code += self.current_scope.replace('/', '_') + '_' + variable.children[1] + ': .space' + str(
+                mips_code += self.current_scope.replace('/', '_') + '_' + variable.children[1] + ': .space ' + str(
                     default_size) + '\n'
                 mips_code += '.text\n'
                 mips_code += '\tli $a0, 256\n'
@@ -140,6 +140,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                 mips_code += '\tjal __init__vtable_{}\n'.format(clas)
 
             mips_code += '\tla\t$ra,__end__\n'
+
 
         else:
             mips_code += '.text\n{}:\n'.format((self.current_scope + '/' + ident).replace('/', '_'))
@@ -1181,16 +1182,11 @@ __gte.d__{}:\tsw $t0, 8($sp)
         return mips_code
 
     def mem_access_l_value(self, parse_tree):
-        mips_code = self.visit(parse_tree.children[0])
         id = parse_tree.children[1].value
-
+        mips_code = self.visit(parse_tree.children[0])
         mips_code += """.text\n\tlw $t0, 0($sp)\n"""
-
         class_type = self.expressionTypes[-1]
-        index = class_type_objects[class_table[class_type.name]].find_var(id)
-        index = index[1]
-        t = class_type_objects[class_table[class_type.name]].find_var(id)
-        t = t[0]
+        t, index = class_type_objects[class_table[class_type.name]].find_var(id)
         mips_code += """\taddi $t1, $t0, {}\n\tsw $t1, 0($sp)\n""".format((1 + index) * 8)
         self.expressionTypes.pop()
         self.expressionTypes.append(t)
