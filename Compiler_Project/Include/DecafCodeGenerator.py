@@ -542,11 +542,8 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         return ''.join(self.visit_children(parse_tree))
 
     def break_stmt(self , parse_tree):
-        mips_code = make_indentation("""
-        
-            .text\t\t\t\t# break
-                j end_stmt_{}
-            ##             
+        mips_code = make_indentation(""".text\t\t\t\t# break
+    j end_stmt_{}            
         """.format(self.loopLabels[-1]))
         return mips_code
 
@@ -1030,19 +1027,17 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code += ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
         if t.name == 'int':
-            mips_code += """.text
+            mips_code += """.text\t\t\t\t# Neg int
     lw $t0, 0($sp)
-    lw $t1, 8($sp)
-    sub $t2, $t1, $t0
-    sw $t2, 8($sp)
-    addi $sp, $sp, 8\n\n"""
+    sub $t0, $zero, $t0
+    sw $t0, 0($sp)
+"""
         else:
-            mips_code += """.text
+            mips_code += """.text\t\t\t\t# Neg double
     l.d $f0, 0($sp)
-    l.d $f2, 8($sp)
-    sub.d $f4, $f2, $f0
-    s.d $f4, 8($sp)
-    addi $sp, $sp, 8\n\n"""
+    neg.d $f0, $f0
+    s.d $f0, 0($sp)
+"""
 
         return mips_code
 
@@ -1535,8 +1530,8 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             formal_name = (exact_name + "/" + formal[0]).replace("/", "_")
             formal_type = formal[1]
             if formal_type.name == 'double' and formal_type.size == 0:
-                mips_code += """l.d  $f0, 0($sp)
-    addi $sp, $sp, 8\n"""
+                mips_code += 'l.d  $f0, 0($sp)\n'
+                mips_code += '\taddi $sp, $sp, 8\n'
                 mips_code += '\ts.d  $f0, {}\n\n'.format(formal_name)
             else:
                 mips_code += '\tlw   $t0, 0($sp)\n'
