@@ -1,7 +1,5 @@
 import sys, getopt
-from Compiler_Project.Include.DecafLexerREGEX import *
-from Compiler_Project.Include.DecafParser import *
-from Compiler_Project.Include.DecafCodeGenerator import *
+from DecafCodeGenerator import *
 
 
 

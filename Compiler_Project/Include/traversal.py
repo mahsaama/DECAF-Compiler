@@ -2,7 +2,7 @@ import lark
 from lark import Lark, Tree
 from lark.lexer import Token
 from lark.visitors import Interpreter
-from Compiler_Project.Include.function import class_type_objects, class_table, Class
+from function import class_type_objects, class_table, Class
 
 
 class ParentTree(Interpreter):
