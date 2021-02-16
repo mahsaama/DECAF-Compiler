@@ -79,32 +79,32 @@ class Function:
 def lib_functions():
     # Add library functions
     function_objects.append(
-        Function(name='itob', label='_itob_', return_type=Type('bool'), formals=[['ival', Type('int')]])
+        Function(name='itob', label='root/itob', return_type=Type('bool'), formals=[['ival', Type('int')]])
     )
 
     function_table['itob'] = 0
 
     function_objects.append(
-        Function(name='btoi', label='_btoi_', return_type=Type('bool'), formals=[['bval', Type('bool')]])
+        Function(name='btoi', label='root/btoi', return_type=Type('bool'), formals=[['bval', Type('bool')]])
     )
 
     function_table['btoi'] = 1
 
     function_objects.append(
-        Function(name='itod', label='_itod_', return_type=Type('double'), formals=[['ival', Type('int')]])
+        Function(name='itod', label='root/itod', return_type=Type('double'), formals=[['ival', Type('int')]])
     )
 
     function_table['itod'] = 2
 
     function_objects.append(
-        Function(name='dtoi_', label='_dtoi_', return_type=Type('int'), formals=[['dval', Type('double')]])
+        Function(name='dtoi_', label='root/dtoi_', return_type=Type('int'), formals=[['dval', Type('double')]])
 
     )
 
     function_table['dtoi_'] = 3
 
     function_objects.append(
-        Function(name='ReadChar__', label='_ReadChar__', return_type=Type('int'), formals=[])
+        Function(name='ReadChar__', label='root/ReadChar__', return_type=Type('int'), formals=[])
     )
 
     function_table['ReadChar__'] = 4
