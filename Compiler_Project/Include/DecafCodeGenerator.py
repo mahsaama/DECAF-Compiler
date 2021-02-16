@@ -1025,69 +1025,57 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         return mips_code
 
     def read_char(self, parse_tree):
-        mips_code = ''
-
-        mips_code += make_indentation(
-            """
-             .text\t\t\t\t # Read Integer
-                 li $v0, 12
-                 syscall             
-                 sub $sp, $sp, 8
-                 sw $v0, 0($sp)
-             """)
+        mips_code = """.text\t\t\t\t # Read Integer
+    li $v0, 12
+    syscall             
+    sub $sp, $sp, 8
+    sw $v0, 0($sp)"""
         self.expressionTypes.append(Type('int'))
         return mips_code
 
     def read_int(self, parse_tree):
-        mips_code = ''
+        mips_code = """
+    addi $sp, $sp, -8
+    sw   $ra, 0($sp)
+    jal root_ReadInteger__
+    lw   $t8, 0($sp)
+    addi $sp, $sp, 8
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 8
 
-        mips_code += make_indentation(
-        """
-        	addi $sp, $sp, -8
-            sw   $ra, 0($sp)
-            jal root_ReadInteger__
-            lw   $t8, 0($sp)
-            addi $sp, $sp, 8
-            lw   $ra, 0($sp)
-            addi $sp, $sp, 8
-
-            addi $sp, $sp, -8
-            sw   $t8, 0($sp)
-        """)
+    addi $sp, $sp, -8
+    sw   $t8, 0($sp)\n"""
         self.expressionTypes.append(Type('int'))
         return mips_code
 
     def read_line(self, parse_tree):
 
         mips_code = ''
-        mips_code += make_indentation(
-            """
-       .text\t\t\t\t    # Read Line
-           li $a0, 256 
-           li $v0, 9        
-           syscall
-           sub $sp, $sp, 8
-           sw $v0, 0($sp)
-           move $a0, $v0
-           li $a1, 256       
-           li $v0, 8        
-           syscall    
-           lw $a0, 0($sp)     
-           read_{label_id}:
-               lb $t0, 0($a0)
-               beq $t0, 0, e_read_{label_id}
-               bne $t0, 10, ten_{ten}
-               li $t2, 0
-               sb $t2, 0($a0)
-               ten_{ten}:
-               bne $t0, 13, thirt_{thirt}
-               li $t2, 0
-               sb $t2, 0($a0)
-               thirt_{thirt}:
-               addi $a0, $a0, 1
-               j read_{label_id}
-           e_read_{label_id}:
-       """.format(label_id=labelCounter(), ten=labelCounter(), thirt=labelCounter()))
+        mips_code += """.text\t\t\t\t# Read Line
+   li $a0, 256 
+   li $v0, 9        
+   syscall
+   sub $sp, $sp, 8
+   sw $v0, 0($sp)
+   move $a0, $v0
+   li $a1, 256       
+   li $v0, 8        
+   syscall    
+   lw $a0, 0($sp)     
+   read_{label_id}:
+       lb $t0, 0($a0)
+       beq $t0, 0, end_read_{label_id}
+       bne $t0, 10, L2_{L2}
+       li $t2, 0
+       sb $t2, 0($a0)
+       L2_{L2}:
+       bne $t0, 13, L1_{L1}
+       li $t2, 0
+       sb $t2, 0($a0)
+       L1_{L1}:
+       addi $a0, $a0, 1
+       j read_{label_id}
+   end_read_{label_id}:""".format(label_id=labelCounter(), L2=labelCounter(), L1=labelCounter())
         self.expressionTypes.append(Type('string'))
         return mips_code
 
@@ -1116,21 +1104,19 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             if parse_tree.children[1].children[0].value == 'bool':
                 shamt = 3
 
-        mips_code += make_indentation("""
-            .text\t\t\t\t # New array
-                lw $a0, 0($sp)
-                addi $sp, $sp, 8
-                addi $t6, $a0, 0 # t6 is length of array
-                sll $a0, $a0, {shamt}
-                addi $a0, $a0, 8 # extra 8 bytes for length
-                li $v0, 9           #rsbrk
-                syscall
-                sw $t6 0($v0)
-                addi $v0, $v0, 8
-                sub $sp, $sp, 8
-                sw $v0, 0($sp)\n
-            ##
-        """.format(shamt=shamt))
+        mips_code += """.text\t\t\t\t # New array 
+    lw $a0, 0($sp)
+    addi $sp, $sp, 8
+    addi $t6, $a0, 0
+    sll $a0, $a0, {shamt}
+    addi $a0, $a0, 8
+    li $v0, 9           
+    syscall
+    sw $t6 0($v0)
+    addi $v0, $v0, 8
+    sub $sp, $sp, 8
+    sw $v0, 0($sp)\n
+""".format(shamt=shamt)
 
         self.expressionTypes.append(Type(name=self.lastType.name, size=self.lastType.size + 1))
         return mips_code
@@ -1561,54 +1547,54 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
 
 
 def decafCGEN(code):
-    code = make_indentation("""
-        int dtoi(double x){
-            if(x >= 0.0)
-                return dtoi_(x);
-            return -dtoi_(-x-0.00000000001);
+    code = """
+int dtoi(double x){
+    if(x >= 0.0)
+        return dtoi_(x);
+    return -dtoi_(-x-0.00000000001);
+}
+int ReadInteger__(){
+    int res;
+    int inp;
+    int sign;
+    bool hex;
+    hex = false;
+    sign = 1;
+    res = 0;
+    while(true){
+        inp = ReadChar__();
+        if (inp == 10){
+            break;
         }
-        int ReadInteger__(){
-            int res;
-            int inp;
-            int sign;
-            bool hex;
-            hex = false;
-            sign = 1;
-            res = 0;
-            while(true){
-                inp = ReadChar__();
-                if (inp == 10){
-                    break;
+        if (inp != 43 && inp != 13){
+            if (inp == 45){
+                sign = -1;
+            }else{
+                if (inp == 120 || inp == 88){
+                    hex = true;
                 }
-                if (inp != 43 && inp != 13){
-                    if (inp == 45){
-                        sign = -1;
+                else{
+                    if(!hex){
+                        res = res * 10 + inp - 48;
                     }else{
-                        if (inp == 120 || inp == 88){
-                            hex = true;
-                        }
-                        else{
-                            if(!hex){
-                                res = res * 10 + inp - 48;
+                        if(inp <= 60){
+                            inp = inp - 48;
+                        }else{
+                            if(inp <= 75){
+                                inp = inp - 65 + 10;
                             }else{
-                                if(inp <= 60){
-                                    inp = inp - 48;
-                                }else{
-                                    if(inp <= 75){
-                                        inp = inp - 65 + 10;
-                                    }else{
-                                        inp = inp - 97 + 10;
-                                    }
-                                }
-                                res = res * 16 + inp;
+                                inp = inp - 97 + 10;
                             }
                         }
+                        res = res * 16 + inp;
                     }
                 }
             }
-        return res * sign;
+        }
     }
-    """) + code
+return res * sign;
+}
+    """ + code
     parser = Lark(Grammar, parser="lalr")
     try:
         parse_tree = parser.parse(code)
