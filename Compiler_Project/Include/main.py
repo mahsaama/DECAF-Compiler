@@ -40,15 +40,6 @@ def main(argv):
 		# PHASE_2
         # output_file.write(LALR_parser(input_code))
         output_file.write(decafCGEN(input_code))
-        # for the sake of testing :
-        output_file.write("""
-            # PROGRAM: Hello, World!
-            .data # Data declaration section
-            out_string: .asciiz "Hello, World!"
-            .text # Assembly language instructions
-            main: # Start of code section
-            li $v0, 4 # system call code for printing string = 4
-            la $a0, out_string # load address of string to be printed into $a0
-            syscall # call operating system to perform operation in $""")
+
 if __name__ == "__main__":
     main(sys.argv[1:])
