@@ -908,47 +908,47 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     add.d $f4, $f2, $f0
     s.d $f4, 8($sp)
     addi $sp, $sp, 8\n\n"""
-        elif t.name == 'string':
-            mips_code += """.text        
-    la $a0, str1
-    la $a1, result
-    jal
-    strcopier
-    nop
-
-    la $a0, str2
-    or $a1, $v0, $zero
-    jal
-    strcopier
-    nop
-    j
-    finish
-    nop
-
-    strcopier:
-    or $t0, $a0, $zero  # Source
-    or $t1, $a1, $zero  # Destination
-
-    loop:
-    lb $t2, 0($t0)
-    beq $t2, $zero, end
-    addiu $t0, $t0, 1
-    sb $t2, 0($t1)
-    addiu $t1, $t1, 1
-    b
-    loop
-    nop
-
-    end:
-    or $v0, $t1, $zero
-    jr $ra
-    nop
-
-    finish:
-    j
-    finish
-    nop
-"""
+#         elif t.name == 'string':
+#             mips_code += """.text
+#     la $a0, str1
+#     la $a1, result
+#     jal
+#     strcopier
+#     nop
+#
+#     la $a0, str2
+#     or $a1, $v0, $zero
+#     jal
+#     strcopier
+#     nop
+#     j
+#     finish
+#     nop
+#
+#     strcopier:
+#     or $t0, $a0, $zero  # Source
+#     or $t1, $a1, $zero  # Destination
+#
+#     loop:
+#     lb $t2, 0($t0)
+#     beq $t2, $zero, end
+#     addiu $t0, $t0, 1
+#     sb $t2, 0($t1)
+#     addiu $t1, $t1, 1
+#     b
+#     loop
+#     nop
+#
+#     end:
+#     or $v0, $t1, $zero
+#     jr $ra
+#     nop
+#
+#     finish:
+#     j
+#     finish
+#     nop
+# """
         # TODO : concatination of 2 arrays , 2 strings
         return mips_code
 
@@ -1503,7 +1503,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             mips_code += """ lw $t0, 0($t0)
     jalr $t0\n"""
         else:
-            label_name = function.name
+            label_name = function.label
             mips_code += '\tjal {}\n'.format(label_name.replace('/', '_'))
 
         if function.return_type.name == 'double' and function.return_type.size == 0:
