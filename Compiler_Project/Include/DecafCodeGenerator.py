@@ -1216,7 +1216,7 @@ strcat_done:
     def array_access_l_value(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
         x = self.expressionTypes.pop()
-        if x.name == "string":
+        if x.name != "int":
             raise Exception
         t = self.expressionTypes[-1]
         if t.name == 'double' and t.size == 1:
@@ -1618,75 +1618,24 @@ return res * sign;
     ParentTree().visit(parse_tree)
     set_parents()
     Traversal().visit(parse_tree)
-    # try:
-    mips_code = CodeGenerator().visit(parse_tree)
-    return mips_code
-#     except:
-#         return """
-# .data
-# out_string: .asciiz "Semantic Error"
-# .text
-# main:
-# li $v0, 4
-# la $a0, out_string
-# syscall
-# li $v0, 10
-# syscall
-# """
+    try:
+        mips_code = CodeGenerator().visit(parse_tree)
+        return mips_code
+    except:
+        return """
+.data
+out_string: .asciiz "Semantic Error"
+.text
+main:
+li $v0, 4
+la $a0, out_string
+syscall
+li $v0, 10
+syscall
+"""
 
 if __name__ == '__main__':
     code = """
 
-void sort(int[] items) {
-
-    /* implementation of bubble sort */
-    int i;
-    int j;
-
-    int n;
-    n = items.length();
-
-    for (i = 0; i < n-1; i = i + 1)
-        for (j = 0; j < n - i - 1; j = j + 1)
-            if (items[j] > items[j + 1]) {
-                int t;
-                t = items[j];
-                items[j] = items[j + 1];
-                items[j + 1] = t;
-            }
-}
-
-int main() {
-    int i;
-    int j;
-    int[] rawitems;
-    int[] items;
-
-    Print("Please enter the numbers (max count: 100, enter -1 to end sooner): ");
-
-    rawitems = NewArray(100, int);
-    for (i = 0; i < 100; i = i + 1) {
-        int x;
-        x = ReadInteger();
-        if (x == -1) break;
-
-        rawitems[i] = x;
-    }
-
-    items = NewArray(i, int);
-
-    // copy to a more convenient location
-    for (j = 0; j < i; j = j + 1) {
-        items[j] = rawitems[j];
-    }
-
-    sort(items);
-
-    Print("After sort: ");
-
-    for (i = 0; i < items.length(); i = i + 1) {
-        Print(items[i]);
-    }
-}
 """
     print(decafCGEN(code))
