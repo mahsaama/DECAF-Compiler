@@ -833,6 +833,8 @@ __gte.d__{}:\tsw $t0, 8($sp)
     def sum(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
+        if t.name != self.expressionTypes[-1].name:
+            raise Exception
         if t.name == 'int':
             mips_code += """.text
     lw $t0, 0($sp)
@@ -893,6 +895,9 @@ strcat_done:
     def sub(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
+        t2 = self.expressionTypes[-1].name
+        if t.name == 'string' or t2 == 'string':
+            raise Exception
         if t.name == 'int':
             mips_code += """.text
     lw $t0, 0($sp)
@@ -900,7 +905,7 @@ strcat_done:
     sub $t2, $t1, $t0
     sw $t2, 8($sp)
     addi $sp, $sp, 8\n\n"""
-        else:
+        elif t.name == 'double':
             mips_code += """.text
     l.d $f0, 0($sp)
     l.d $f2, 8($sp)
@@ -912,6 +917,9 @@ strcat_done:
     def mul(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
+        t2 = self.expressionTypes[-1].name
+        if t.name == 'string' or t2 == 'string':
+            raise Exception
         if t.name == 'int':
             mips_code += """.text
     lw   $t0, 0($sp)
@@ -931,6 +939,9 @@ strcat_done:
     def div(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes.pop()
+        t2 = self.expressionTypes[-1].name
+        if t.name == 'string' or t2 == 'string':
+            raise Exception
         if t.name == 'int':
             mips_code += """.text
     lw $t0, 0($sp)
@@ -949,6 +960,10 @@ strcat_done:
 
     def mod(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
+        t = self.expressionTypes[-1].name
+        t2 = self.expressionTypes[-1].name
+        if t == 'string' or t2 == 'string':
+            raise Exception
         mips_code += """.text
     lw $t0, 0($sp)
     lw $t1, 8($sp)
@@ -1600,7 +1615,6 @@ return res * sign;
         mips_code = CodeGenerator().visit(parse_tree)
         return mips_code
     except:
-
         return """
 .data
 out_string: .asciiz "Semantic Error"
@@ -1616,15 +1630,12 @@ syscall
 
 if __name__ == '__main__':
     code = """
-  void test(){
-    int a;
-    return 1;
-    }
-    
 int main() {
-  int aaa;
-  aaa = "wrong";
-  
-  }
+    int a;
+	string b;
+	a = 23;
+	b = "this is test";
+	Print(a % b);
+}
 """
     print(decafCGEN(code))
