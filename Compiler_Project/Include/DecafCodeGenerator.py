@@ -119,7 +119,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                           '\ttrue: .asciiz "true"\n'
                           '\tfalse: .asciiz "false"\n'
                           '\tpconst10000: .double 10000.0\n'
-                          '\tnw: .asciiz "\\n"\n'
+                          '\tnl: .asciiz "\\n"\n'
                           '\tsign_double: .asciiz "-"\n'
                           '\t__const_0_5__: .double 0.5\n')
 
@@ -570,7 +570,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         mips_code += """
 # Print new line
     li $v0, 4
-    la $a0, nw
+    la $a0, nl
     syscall\n
 """
         return mips_code
@@ -869,7 +869,6 @@ __gte.d__{}:\tsw $t0, 8($sp)
 string1:    .space      256             # buffer for first string
 string2:    .space      256             # buffer for second string
 string3:    .space      512             # combined output buffer
-
 .text
 main:
     la      $a0,0($sp)
@@ -888,11 +887,9 @@ string1_short:
     # string 2 is longer -- append to output
     la      $a1,string2
     jal     strcat
-
     # string 1 is shorter -- append to output
     la      $a1,string1
     jal     strcat
-
 strcat:
     lb      $v0,0($a1)              # get the current char
     beqz    $v0,strcat_done         # is char 0? if yes, done
@@ -1046,7 +1043,6 @@ strcat_done:
     addi $sp, $sp, 8
     lw   $ra, 0($sp)
     addi $sp, $sp, 8
-
     addi $sp, $sp, -8
     sw   $t8, 0($sp)\n"""
         self.expressionTypes.append(Type('int'))
@@ -1101,21 +1097,18 @@ strcat_done:
         return mips_code
 
     def new_array(self, parse_tree):
-        mips_code = ''
-        mips_code += ''.join(self.visit_children(parse_tree))
 
+        if self.expressionTypes[-1].name != "int":
+            raise Exception
+
+        mips_code = ''.join(self.visit_children(parse_tree))
         arr = parse_tree
         while type(arr.children[0]) == Tree:
             arr = arr.children[0]
-
-        if (arr.children[0].type != "INT"):
-            raise Exception
-
         shamt = 2
         if type(parse_tree.children[1].children[0]) == lark.lexer.Token:
             if parse_tree.children[1].children[0].value == 'bool':
                 shamt = 3
-
         mips_code += """.text\t\t\t\t # New array 
     lw $a0, 0($sp)
     addi $sp, $sp, 8
@@ -1625,48 +1618,75 @@ return res * sign;
     ParentTree().visit(parse_tree)
     set_parents()
     Traversal().visit(parse_tree)
-    try:
-        mips_code = CodeGenerator().visit(parse_tree)
-        return mips_code
-    except:
-        return """
-.data
-out_string: .asciiz "Semantic Error"
-.text
-main:
-li $v0, 4
-la $a0, out_string
-syscall
-li $v0, 10
-syscall
-
-"""
+    # try:
+    mips_code = CodeGenerator().visit(parse_tree)
+    return mips_code
+#     except:
+#         return """
+# .data
+# out_string: .asciiz "Semantic Error"
+# .text
+# main:
+# li $v0, 4
+# la $a0, out_string
+# syscall
+# li $v0, 10
+# syscall
+# """
 
 if __name__ == '__main__':
     code = """
-class A{
-    string a;
-    void set_a(string a) {
-        this.a = a;
-    }
-    string get_a(){
-        return a;
-    }
-    bool comp(A oth){
-        if (a == oth.get_a())
-            return true;
-        return false;
-    }
+
+void sort(int[] items) {
+
+    /* implementation of bubble sort */
+    int i;
+    int j;
+
+    int n;
+    n = items.length();
+
+    for (i = 0; i < n-1; i = i + 1)
+        for (j = 0; j < n - i - 1; j = j + 1)
+            if (items[j] > items[j + 1]) {
+                int t;
+                t = items[j];
+                items[j] = items[j + 1];
+                items[j + 1] = t;
+            }
 }
 
 int main() {
-    double res;
-    int a;
-    int b;
-    a = ReadInteger();
-    b = ReadInteger();
-    res = itod(a) / itod(b);
-    Print(dtoi(res) == a/b);
+    int i;
+    int j;
+    int[] rawitems;
+    int[] items;
+
+    Print("Please enter the numbers (max count: 100, enter -1 to end sooner): ");
+
+    rawitems = NewArray(100, int);
+    for (i = 0; i < 100; i = i + 1) {
+        int x;
+        x = ReadInteger();
+        if (x == -1) break;
+
+        rawitems[i] = x;
+    }
+
+    items = NewArray(i, int);
+
+    // copy to a more convenient location
+    for (j = 0; j < i; j = j + 1) {
+        items[j] = rawitems[j];
+    }
+
+    sort(items);
+
+    Print("After sort: ");
+
+    for (i = 0; i < items.length(); i = i + 1) {
+        Print(items[i]);
+    }
 }
 """
     print(decafCGEN(code))
