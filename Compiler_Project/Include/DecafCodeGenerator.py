@@ -1,7 +1,7 @@
 import re
 from SymbolTable import *
 from traversal import *
-from LibFunctionCodeGenerator import primitve_inst
+from LibFunctionCodeGenerator import *
 from copy import deepcopy
 import sys
 
@@ -95,8 +95,8 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             ident = parse_tree.children[0]
             formals = parse_tree.children[1]
             stmt_block = parse_tree.children[2]
-        if type != function_objects[function_table[ident]].return_type:
-            raise Exception
+        # if type != function_objects[function_table[ident]].return_type.name:
+        #     raise Exception
 
         # ident = main
         if ident == "main":
@@ -1562,54 +1562,7 @@ strcat_done:
 
 
 def decafCGEN(code):
-    code = """
-int dtoi(double x){
-    if(x >= 0.0)
-        return dtoi_(x);
-    return -dtoi_(-x-0.00000000001);
-}
-int ReadInteger__(){
-    int res;
-    int inp;
-    int sign;
-    bool hex;
-    hex = false;
-    sign = 1;
-    res = 0;
-    while(true){
-        inp = ReadChar__();
-        if (inp == 10){
-            break;
-        }
-        if (inp != 43 && inp != 13){
-            if (inp == 45){
-                sign = -1;
-            }else{
-                if (inp == 120 || inp == 88){
-                    hex = true;
-                }
-                else{
-                    if(!hex){
-                        res = res * 10 + inp - 48;
-                    }else{
-                        if(inp <= 60){
-                            inp = inp - 48;
-                        }else{
-                            if(inp <= 75){
-                                inp = inp - 65 + 10;
-                            }else{
-                                inp = inp - 97 + 10;
-                            }
-                        }
-                        res = res * 16 + inp;
-                    }
-                }
-            }
-        }
-    }
-return res * sign;
-}
-    """ + code
+    code = lib_initialise() + code
     parser = Lark(Grammar, parser="lalr")
     try:
         parse_tree = parser.parse(code)
@@ -1637,14 +1590,29 @@ syscall
 
 if __name__ == '__main__':
     code = """
-int f(int s) {
-    return 2;
+class A{
+    string a;
+    void set_a(string a) {
+        this.a = a;
+    }
+    string get_a(){
+        return a;
+    }
+    bool comp(A oth){
+        if (a == oth.get_a())
+            return true;
+        return false;
+    }
 }
+
 int main() {
+    double res;
     int a;
     int b;
-    b = 1;
-    a = f(b);
+    a = ReadInteger();
+    b = ReadInteger();
+    res = itod(a) / itod(b);
+    Print(dtoi(res) == a/b);
 }
 """
     print(decafCGEN(code))

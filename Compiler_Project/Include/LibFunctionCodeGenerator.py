@@ -155,3 +155,54 @@ end_rstmt_65:
 
 
     return mips_code
+
+def lib_initialise():
+    code = """
+int dtoi(double x){
+    if(x >= 0.0)
+        return dtoi_(x);
+    return -dtoi_(-x-0.00000000001);
+}
+int ReadInteger__(){
+    int res;
+    int inp;
+    int sign;
+    bool hex;
+    hex = false;
+    sign = 1;
+    res = 0;
+    while(true){
+        inp = ReadChar__();
+        if (inp == 10){
+            break;
+        }
+        if (inp != 43 && inp != 13){
+            if (inp == 45){
+                sign = -1;
+            }else{
+                if (inp == 120 || inp == 88){
+                    hex = true;
+                }
+                else{
+                    if(!hex){
+                        res = res * 10 + inp - 48;
+                    }else{
+                        if(inp <= 60){
+                            inp = inp - 48;
+                        }else{
+                            if(inp <= 75){
+                                inp = inp - 65 + 10;
+                            }else{
+                                inp = inp - 97 + 10;
+                            }
+                        }
+                        res = res * 16 + inp;
+                    }
+                }
+            }
+        }
+    }
+return res * sign;
+}
+    """
+    return code
