@@ -81,7 +81,6 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
         return ''
 
     def function_decl(self, parse_tree):
-
         mips_code = ''
         ###### type IDENT "("formals")" stmt_block
         if len(parse_tree.children) == 4:
@@ -96,6 +95,8 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             ident = parse_tree.children[0]
             formals = parse_tree.children[1]
             stmt_block = parse_tree.children[2]
+        if type != function_objects[function_table[ident]].return_type:
+            raise Exception
 
         # ident = main
         if ident == "main":
@@ -1636,6 +1637,14 @@ syscall
 
 if __name__ == '__main__':
     code = """
-
+int f(int s) {
+    return 2;
+}
+int main() {
+    int a;
+    int b;
+    b = 1;
+    a = f(b);
+}
 """
     print(decafCGEN(code))
