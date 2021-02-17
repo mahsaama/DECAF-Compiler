@@ -1124,6 +1124,9 @@ strcat_done:
                 class_name = scope.split('/')[-1][9:]
                 if class_type_objects[class_table[class_name]].find_var(name)[1] >= 0:
                     break
+
+            if scope == '':
+                raise Exception
             scope = POP(scope)
         if '__class__' in scope.split('/')[-1]:
             classObject = class_type_objects[class_table[scope.split('/')[-1][9:]]]
