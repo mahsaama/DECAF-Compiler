@@ -147,14 +147,25 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             return_stmt = Tree(data="stmt", children=tree_children)
             stmt_block._meta = return_stmt
 
-
         if type == 'void':
             if len(stmt_block.children) != 0:
                 for i in stmt_block.children:
                     for j in i.children:
-                        if j.data == 'return_stmt':
+                        if j.data == 'return_stmt' and len(j.children) != 0:
                             raise Exception
 
+        if type != 'void' and ident != 'main':
+            flag = 1
+            if len(stmt_block.children) != 0:
+                for i in stmt_block.children:
+                    for j in i.children:
+                        if j.data == 'return_stmt' and len(j.children) != 0:
+                            flag = 0
+
+                if flag:
+                    raise Exception
+            else:
+                raise Exception
 
         mips_code += self.visit(stmt_block)
 
@@ -1630,12 +1641,18 @@ syscall
 
 if __name__ == '__main__':
     code = """
+    void test()
+    {return;}
+    
+    int test1(){
+    int a;
+    return ;
+    }
+    
 int main() {
     int a;
 	string b;
-	a = 23;
-	b = "this is test";
-	Print(a % b);
+	
 }
 """
     print(decafCGEN(code))
