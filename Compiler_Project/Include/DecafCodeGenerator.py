@@ -83,15 +83,16 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     def function_decl(self, parse_tree):
 
         mips_code = ''
-        ##### "void" IDENT "("formals")" stmt_block
+        ###### type IDENT "("formals")" stmt_block
         if len(parse_tree.children) == 4:
+            type = parse_tree.children[0].children[0]
             ident = parse_tree.children[1]
             formals = parse_tree.children[2]
             stmt_block = parse_tree.children[3]
 
-
-        ###### type IDENT "("formals")" stmt_block
+        ##### "void" IDENT "("formals")" stmt_block
         else:
+            type = 'void'
             ident = parse_tree.children[0]
             formals = parse_tree.children[1]
             stmt_block = parse_tree.children[2]
@@ -145,6 +146,15 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             tree_children = [Tree(data='return_stmt', children=[])]
             return_stmt = Tree(data="stmt", children=tree_children)
             stmt_block._meta = return_stmt
+
+
+        if type == 'void':
+            if len(stmt_block.children) != 0:
+                for i in stmt_block.children:
+                    for j in i.children:
+                        if j.data == 'return_stmt':
+                            raise Exception
+
 
         mips_code += self.visit(stmt_block)
 
@@ -1597,7 +1607,7 @@ out_string: .asciiz "Semantic Error"
 .text
 main:
 li $v0, 4
-la $a0, out_string 
+la $a0, out_string
 syscall
 li $v0, 10
 syscall
@@ -1606,12 +1616,15 @@ syscall
 
 if __name__ == '__main__':
     code = """
-int main(){
-    int [] a;
-    string n;
-	n = "1";
-	a = NewArray( 10 , int );
-	Print(a[n]);
-}
+  void test(){
+    int a;
+    return 1;
+    }
+    
+int main() {
+  int aaa;
+  aaa = "wrong";
+  
+  }
 """
     print(decafCGEN(code))
