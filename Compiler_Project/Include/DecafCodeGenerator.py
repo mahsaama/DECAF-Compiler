@@ -88,6 +88,9 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             ident = parse_tree.children[1]
             formals = parse_tree.children[2]
             stmt_block = parse_tree.children[3]
+            # if ident in function_table:
+            #     if type != function_objects[function_table[ident]].return_type.name:
+            #         raise Exception
 
         ##### "void" IDENT "("formals")" stmt_block
         else:
@@ -95,8 +98,6 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             ident = parse_tree.children[0]
             formals = parse_tree.children[1]
             stmt_block = parse_tree.children[2]
-        # if type != function_objects[function_table[ident]].return_type.name:
-        #     raise Exception
 
         # ident = main
         if ident == "main":
@@ -138,7 +139,6 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
             mips_code += '.text\n{}:\n'.format((self.current_scope + '/' + ident).replace('/', '_'))
 
         self.current_scope += "/" + ident.value
-
         mips_code += self.visit(formals)
         self.current_scope += "/_local"
         self.stack_counter.append(0)
@@ -169,7 +169,6 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                 raise Exception
 
         mips_code += self.visit(stmt_block)
-
         locals_cnt = self.stack_counter[-1]
         self.stack = self.stack[:-locals_cnt]
         self.stack_counter.pop()
@@ -1590,29 +1589,15 @@ syscall
 
 if __name__ == '__main__':
     code = """
-class A{
-    string a;
-    void set_a(string a) {
-        this.a = a;
-    }
-    string get_a(){
-        return a;
-    }
-    bool comp(A oth){
-        if (a == oth.get_a())
-            return true;
-        return false;
-    }
+int f(int i) {
+    return "2";
 }
 
 int main() {
-    double res;
     int a;
     int b;
-    a = ReadInteger();
-    b = ReadInteger();
-    res = itod(a) / itod(b);
-    Print(dtoi(res) == a/b);
+    b = 1;
+    a = f(b);
 }
 """
     print(decafCGEN(code))
