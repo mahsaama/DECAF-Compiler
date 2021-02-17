@@ -1070,19 +1070,7 @@ strcat_done:
             arr = arr.children[0]
 
         if (arr.children[0].type != "INT"):
-            mips_code = """
-.text
-    .globl main
-    main:
-    la $a0 , errorMsg
-    addi $v0 , $zero, 4
-    syscall
-    jr $ra
-
-    .data
-    errorMsg: .asciiz "Semantic Error"
-    """
-            sys.exit(mips_code)
+            raise Exception
 
         shamt = 2
         if type(parse_tree.children[1].children[0]) == lark.lexer.Token:
@@ -1108,19 +1096,7 @@ strcat_done:
 
         if (len(acc) != 0):
             if (acc1[-1] - acc[-1] < 100):
-                mips_code = """
-        .text
-            .globl main
-            main:
-            la $a0 , errorMsg
-            addi $v0 , $zero, 4
-            syscall
-            jr $ra
-
-            .data
-            errorMsg: .asciiz "Semantic Error"
-            """
-                sys.exit(mips_code)
+                raise Exception
 
         self.expressionTypes.append(Type(name=self.lastType.name, size=self.lastType.size + 1))
         return mips_code
@@ -1204,7 +1180,9 @@ strcat_done:
 
     def array_access_l_value(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
-        self.expressionTypes.pop()
+        x = self.expressionTypes.pop()
+        if x.name == "string":
+            raise Exception
         t = self.expressionTypes[-1]
         if t.name == 'double' and t.size == 1:
             mips_code += """.text
@@ -1215,7 +1193,7 @@ strcat_done:
     add $t1, $t0, $t7
     sw $t1, 8($sp)
     addi $sp, $sp, 8\n\n"""
-        else:
+        elif t.name == 'int':
             mips_code += """.text
     lw $t7, 8($sp)
     lw $t0, 0($sp)
@@ -1610,25 +1588,27 @@ return res * sign;
         return mips_code
     except:
 
-        mips_code = """.text
-    .globl main
-    main:
-    la $a0 , errorMsg
-    addi $v0 , $zero, 4
-    syscall
-    jr $ra
-    
-    .data
-    errorMsg: .asciiz "Semantic Error"
+        return """
+.data
+out_string: .asciiz "Semantic Error"
+.text
+main:
+li $v0, 4
+la $a0, out_string 
+syscall
+li $v0, 10
+syscall
+
 """
-        return mips_code
 
 if __name__ == '__main__':
-#     code = """
-#     int main() {
-#
-#  NewArray(10.5, int);
-#
-#
-# }"""
+    code = """
+int main(){
+    int [] a;
+    string n;
+	n = "1";
+	a = NewArray( 10 , int );
+	Print(a[n]);
+}
+"""
     print(decafCGEN(code))
