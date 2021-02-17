@@ -608,6 +608,9 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
     def assignment(self, parse_tree):
         mips_code = ''.join(self.visit_children(parse_tree))
         t = self.expressionTypes[-1]
+        t2 = self.expressionTypes[-2].name
+        if (t.name != t2) and (t.name == "string" or t2 == "string") :
+            raise Exception
         if t.name == 'double' and t.size == 0:
             mips_code += """.text
     lw $t0, 8($sp)
@@ -1641,18 +1644,29 @@ syscall
 
 if __name__ == '__main__':
     code = """
-    void test()
-    {return;}
-    
-    int test1(){
-    int a;
-    return ;
+class A{
+    string a;
+    void set_a(string a) {
+        this.a = a;
     }
-    
+    string get_a(){
+        return a;
+    }
+    bool comp(A oth){
+        if (a == oth.get_a())
+            return true;
+        return false;
+    }
+}
+
 int main() {
+    double res;
     int a;
-	string b;
-	
+    int b;
+    a = ReadInteger();
+    b = ReadInteger();
+    res = itod(a) / itod(b);
+    Print(dtoi(res) == a/b);
 }
 """
     print(decafCGEN(code))
