@@ -377,7 +377,7 @@ class CodeGenerator(Interpreter):  # TODO : Add access modes
                 func_name = self.current_scope.split('/')[1]
                 funct = function_objects[function_table[func_name]]
 
-            if funct.return_type.name == 'double' and funct_count.return_type.size == 0:
+            if funct.return_type.name == 'double' and funct.return_type.size == 0:
                 mips_code += '\tl.d   $f30, 0($sp)\n' + '\taddi $sp, $sp, 8\n'
 
             elif funct.return_type.name != 'void':
