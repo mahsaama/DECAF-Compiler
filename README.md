@@ -1,4 +1,7 @@
-# Compiler 99-00 ATREMA
+# DECAF Compiler 
+
+40414 - Compiler Design
+
 | Name	         |Student_Number|
 |----------------|--------------|
 | Reyhaneh Dehghan |95105562      |
